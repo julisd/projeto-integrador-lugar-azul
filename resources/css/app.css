@@ -1,0 +1,15 @@
+.page-home, 
+.page-login {
+    height: 100%;
+}
+
+.page-registro{
+    height: 100%;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+}
