@@ -142,8 +142,8 @@
     </div>
 
 
-     <!-- Modal de Confirmação de Logout Estabelecimento -->
-     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <!-- Modal de Confirmação de Logout Estabelecimento -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -183,10 +183,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <a href="{{ route('excluirContaEstabelecimento') }}" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('excluir-conta-form').submit();">
+                    <a href="{{ route('excluirContaEstabelecimento') }}" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('excluir-conta-form-estabelecimento').submit();">
                         Excluir Conta
                     </a>
-                    <form id="" action="{{ route('excluirContaEstabelecimento') }}" method="POST" class="d-none">
+
+                    <form id="excluir-conta-form-estabelecimento" action="{{ route('excluirContaEstabelecimento') }}" method="POST" class="d-none">
                         @csrf
                     </form>
                 </div>
@@ -195,5 +196,4 @@
     </div>
     @yield('content')
 </body>
-
 </html>
