@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Estabelecimento;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Estabelecimento;
@@ -10,27 +10,34 @@ class EstabelecimentoAuthController extends Controller
 {
     public function showLoginForm()
     {
-        return view('estabelecimento.login');
+        return view('auth.estabelecimento.login');
     }
 
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('/'); // Redireciona para a página principal após o login
+        if (Auth::guard('estabelecimento')->attempt($credentials)) {
+            return redirect()->intended('/estabelecimento/home');
         } else {
-            return redirect()->back()->withErrors(['message' => 'E-mail ou senha incorretos']);
+            return redirect()->back()->withErrors(['email' => 'Email não registrado ou senha incorreta.']);
         }
+    }
+
+    
+    public function showLinkRequestForm()
+    {
+        return view('auth.estabelecimento.passwords.email');
     }
 
     public function showRegistrationForm()
     {
-        return view('estabelecimento.register');
+        return view('auth.estabelecimento.register');
     }
 
     public function register(Request $request)
     {
+
         $customMessages = [
             'name.required' => 'O campo nome é obrigatório.',
             'email.required' => 'O campo e-mail é obrigatório.',
@@ -58,7 +65,7 @@ class EstabelecimentoAuthController extends Controller
             'cnpj' => $request->cnpj,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'descricao' => $request->description,
+            'description' => $request->description,
             'category' => $request->category,
         ]);
 
@@ -67,19 +74,53 @@ class EstabelecimentoAuthController extends Controller
 
     public function home()
     {    
-        
+        return view('estabelecimento.home');
+
     }
 
-    // public function editar()
-    // {
-    //     return view('estabelecimento.editar');
-    // }
+    public function editar()
+    {
+        return view('estabelecimento.editar');
+    }
     
-    // public function update(Request $request)
-    // {
-       
-    //     return redirect()->route('estabelecimento')->with('success', 'Cadastro atualizado com sucesso!');
-    // }
+    public function update(Request $request)
+    {
+        $user = Auth::user();
     
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
+            'cnpj' => 'required|string',
+            'description' => 'required|string',
+            'category' => 'required|string',
+        ]);
+    
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->cnpj = $request->cnpj;
+        $user->description = $request->description;
+        $user->category = $request->category;
+        $user->save();
+    
+        return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
+    }
 
+    public function logout(Request $request)
+    {
+        Auth::guard('estabelecimento')->logout(); 
+        return redirect('/');
+    }
+
+
+    public function excluirConta(Request $request)
+    {
+        $user = Auth::guard('estabelecimento')->user();
+    
+        Auth::guard('estabelecimento')->logout();
+    
+        $user->delete();
+    
+        return redirect('/');
+    }
+    
 }

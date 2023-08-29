@@ -8,7 +8,7 @@
             <div class="col-md-6 mb-4">
                 <div class="card border border-primary">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="card-title">Login de Usuário</h5>
+                        <h5 class="card-title">Login de Estabelecimento</h5>
                     </div>
                     <div class="card-body text-center">
                         @if ($errors->any())
@@ -21,7 +21,7 @@
                         </div>
                         @endif
 
-                        <form method="POST" action="{{ route('pessoa.login') }}">
+                        <form method="POST" action="{{ route('estabelecimento.login') }}">
                             @csrf
                             <div class="form-group text-left">
                                 <label for="email">Email</label>
@@ -34,10 +34,10 @@
                             <button type="submit" class="btn btn-primary">Entrar</button>
                         </form>
                         <p>
-                            <a href="{{ route('pessoa.password.request') }}">Esqueceu a senha?</a>
+                            <a href="{{ route('estabelecimento.password.request') }}">Esqueceu a senha?</a>
                         </p>
                         <p class="mt-3">
-                            Ainda não tem uma conta? <a href="{{ route('pessoa.register') }}">Cadastre-se aqui</a>
+                            Ainda não tem uma conta? <a href="{{ route('estabelecimento.register') }}">Cadastre-se aqui</a>
                         </p>
                     </div>
                 </div>

@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                Bem-vindo, {{ Auth::guard('pessoa_usuaria')->user()->name }}!
+                    Bem-vindo, {{ Auth::guard('estabelecimento')->user()->name }}!
                 </div>
             </div>
         </div>

@@ -9,14 +9,13 @@
                 <div class="card-header">{{ __('Editar Cadastro') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('pessoa.atualizarConta') }}">
+                    <form method="POST" action="{{ route('estabelecimento.atualizarConta') }}">
                         @csrf
                         @method('PUT')
 
                         <div class="form-group">
                             <label for="name">Nome</label>
                             <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ Auth::user()->name }}" required autocomplete="name" autofocus>
-
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -27,7 +26,6 @@
                         <div class="form-group">
                             <label for="email">E-mail</label>
                             <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ Auth::user()->email }}" required autocomplete="email">
-
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -35,11 +33,36 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="birthdate">Data de Nascimento</label>
-                            <input id="birthdate" type="date" class="form-control @error('birthdate') is-invalid @enderror" name="birthdate" value="{{ Auth::user()->birthdate }}" required>
 
-                            @error('birthdate')
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ</label>
+                            <input id="cnpj" type="text" class="form-control @error('cnpj') is-invalid @enderror" name="cnpj" value="{{ Auth::user()->cnpj }}" required>
+                            @error('cnpj')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Descrição</label>
+                            <textarea id="description" class="form-control @error('description') is-invalid @enderror" name="description" required>{{ Auth::user()->description }}</textarea>
+                            @error('description')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Categoria</label>
+                            <select id="category" class="form-control @error('category') is-invalid @enderror" name="category" required>
+                                <option value="" disabled selected>Selecione uma categoria</option>
+                                <option value="Lazer" @if(Auth::user()->category == 'Lazer') selected @endif>Lazer</option>
+                                <option value="Saúde" @if(Auth::user()->category == 'Saúde') selected @endif>Saúde</option>
+                                <option value="Educação" @if(Auth::user()->category == 'Educação') selected @endif>Educação</option>
+                            </select>
+                            @error('category')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

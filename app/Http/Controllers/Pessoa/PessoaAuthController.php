@@ -104,18 +104,17 @@ class PessoaAuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('pessoa_usuaria')->logout(); // Logout para PessoaUsuaria
+        Auth::guard('pessoa_usuaria')->logout(); 
         return redirect('/');
     }
 
 
     public function excluirConta(Request $request)
     {
-        $user = Auth::user();
-
+        $user = Auth::guard('pessoa_usuaria')->user();
+    
         Auth::guard('pessoa_usuaria')->logout();
 
-        // 3. Excluir o usuário
         $user->delete();
 
         return redirect('/');

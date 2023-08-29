@@ -10,33 +10,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Estabelecimento extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use  HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'estabelecimentos';
     protected $fillable = [
-        'name', 'cnpj', 'email', 'password', 'descricao', 'category',
+        'name', 'cnpj', 'email', 'password', 'description', 'category',
     ];
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+   
 }

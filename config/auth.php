@@ -3,18 +3,17 @@
 return [
 
    'defaults' => [
-    'guard' => 'pessoa_usuaria', // Definindo o guard padrão para PessoaUsuaria
-    'passwords' => 'pessoa_usuarias', // Definindo o provider de senhas padrão para PessoaUsuaria
+    
 ],
 
 'guards' => [
     'pessoa_usuaria' => [
         'driver' => 'session',
-        'provider' => 'pessoa_usuarias', // Definindo o provider correspondente para PessoaUsuaria
+        'provider' => 'pessoa_usuarias', 
     ],
     'estabelecimento' => [
         'driver' => 'session',
-        'provider' => 'estabelecimentos', // Definindo o provider correspondente para Estabelecimento
+        'provider' => 'estabelecimentos', 
     ],
 ],
 
