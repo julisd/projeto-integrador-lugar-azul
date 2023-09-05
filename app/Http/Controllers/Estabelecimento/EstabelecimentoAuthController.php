@@ -1,13 +1,30 @@
 <?php
 
 namespace App\Http\Controllers\Estabelecimento;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Password;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Estabelecimento;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class EstabelecimentoAuthController extends Controller
 {
+
+    use SendsPasswordResetEmails;
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $response = Password::broker('estabelecimentos')->sendResetLink(
+            $request->only('email')
+        );
+
+        return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
+
+    }
+
     public function showLoginForm()
     {
         return view('auth.estabelecimento.login');
@@ -22,6 +39,7 @@ class EstabelecimentoAuthController extends Controller
         } else {
             return redirect()->back()->withErrors(['email' => 'Email não registrado ou senha incorreta.']);
         }
+        
     }
 
     
@@ -48,17 +66,28 @@ class EstabelecimentoAuthController extends Controller
             'password.confirmed' => 'As senhas não correspondem.',
             'category.required' => 'Selecione uma categoria',
             'cnpj.required' => 'O campo CNPJ é obrigatório',
+            'cnpj.unique' => 'Este CNPJ já está sendo usado',
+            'cnpj.regex' => 'O CNPJ informado não é válido',
             'description.required' => 'Nos ajude a te conhecer. Fala mais sobre a sua empresa?'
         ];
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'cnpj' => 'required|string|unique:estabelecimentos',
             'email' => 'required|string|email|unique:estabelecimentos',
             'password' => 'required|string|min:8|confirmed',
             'description' => 'required|string',
             'category' => 'required|string',
+            'cnpj' => [
+                'required',
+                Rule::unique('estabelecimentos'),
+                'regex:/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/',
+            ],
         ], $customMessages);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
         Estabelecimento::create([
             'name' => $request->name,
