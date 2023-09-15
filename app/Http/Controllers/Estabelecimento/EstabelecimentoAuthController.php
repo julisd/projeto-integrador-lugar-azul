@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Estabelecimento;
+
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Support\Facades\Password;
 use App\Http\Controllers\Controller;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Estabelecimento;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Endereco;
 
 class EstabelecimentoAuthController extends Controller
 {
@@ -22,7 +24,6 @@ class EstabelecimentoAuthController extends Controller
         );
 
         return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
-
     }
 
     public function showLoginForm()
@@ -39,10 +40,9 @@ class EstabelecimentoAuthController extends Controller
         } else {
             return redirect()->back()->withErrors(['email' => 'Email não registrado ou senha incorreta.']);
         }
-        
     }
 
-    
+
     public function showLinkRequestForm()
     {
         return view('auth.estabelecimento.passwords.email');
@@ -68,7 +68,13 @@ class EstabelecimentoAuthController extends Controller
             'cnpj.required' => 'O campo CNPJ é obrigatório',
             'cnpj.unique' => 'Este CNPJ já está sendo usado',
             'cnpj.regex' => 'O CNPJ informado não é válido',
-            'description.required' => 'Nos ajude a te conhecer. Fala mais sobre a sua empresa?'
+            'description.required' => 'Nos ajude a te conhecer. Fala mais sobre a sua empresa?',
+            'cep.required' => 'O campo CEP é obrigatório.',
+            'logradouro.required' => 'O campo Logradouro é obrigatório.',
+            'numero.required' => 'O campo Número é obrigatório.',
+            'bairro.required' => 'O campo Bairro é obrigatório.',
+            'cidade.required' => 'O campo Cidade é obrigatório.',
+            'uf.required' => 'O campo UF é obrigatório.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -83,12 +89,31 @@ class EstabelecimentoAuthController extends Controller
                 Rule::unique('estabelecimentos'),
                 'regex:/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/',
             ],
+            'cep' => 'required|string',
+            'logradouro' => 'required|string|max:255',
+            'numero' => 'required|string|max:10',
+            'complemento' => 'nullable|string|max:255',
+            'bairro' => 'required|string|max:255',
+            'cidade' => 'required|string|max:255',
+            'uf' => 'required|string|max:2',
         ], $customMessages);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
+        // Crie o endereço
+        $endereco = Endereco::create([
+            'cep' => $request->cep,
+            'logradouro' => $request->logradouro,
+            'numero' => $request->numero,
+            'complemento' => $request->complemento,
+            'bairro' => $request->bairro,
+            'cidade' => $request->cidade,
+            'uf' => $request->uf,
+        ]);
+
+        // Crie o estabelecimento associando o endereço
         Estabelecimento::create([
             'name' => $request->name,
             'cnpj' => $request->cnpj,
@@ -96,47 +121,72 @@ class EstabelecimentoAuthController extends Controller
             'password' => bcrypt($request->password),
             'description' => $request->description,
             'category' => $request->category,
+            'endereco_id' => $endereco->id, // Associar o endereço criado ao estabelecimento
         ]);
 
         return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
     }
 
     public function home()
-    {    
+    {
         return view('estabelecimento.home');
-
     }
 
     public function editar()
     {
         return view('estabelecimento.editar');
     }
-    
+
     public function update(Request $request)
     {
         $user = Auth::user();
-    
+
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
             'cnpj' => 'required|string',
             'description' => 'required|string',
             'category' => 'required|string',
+            'cep' => 'required|string|regex:/^\d{5}-\d{3}$/',
+            'logradouro' => 'required|string|max:255',
+            'numero' => 'required|string|max:10',
+            'complemento' => 'nullable|string|max:255',
+            'bairro' => 'required|string|max:255',
+            'cidade' => 'required|string|max:255',
+            'uf' => 'required|string|max:2',
         ]);
-    
+
         $user->name = $request->name;
         $user->email = $request->email;
         $user->cnpj = $request->cnpj;
         $user->description = $request->description;
         $user->category = $request->category;
-        $user->save();
-    
+
+        // Carregue o relacionamento 'endereco' se já existir
+        $user = Auth::user()->load('endereco');
+
+
+        // Verifique se o relacionamento 'endereco' está carregado antes de acessá-lo
+        if ($user->endereco) {
+            $user->endereco->cep = $request->cep;
+            $user->endereco->logradouro = $request->logradouro;
+            $user->endereco->numero = $request->numero;
+            $user->endereco->complemento = $request->complemento;
+            $user->endereco->bairro = $request->bairro;
+            $user->endereco->cidade = $request->cidade;
+            $user->endereco->uf = $request->uf;
+        }
+
+        $user->push(); // Salvar o modelo principal e suas relações
+
         return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
     }
 
+
+
     public function logout(Request $request)
     {
-        Auth::guard('estabelecimento')->logout(); 
+        Auth::guard('estabelecimento')->logout();
         return redirect('/');
     }
 
@@ -144,12 +194,11 @@ class EstabelecimentoAuthController extends Controller
     public function excluirConta(Request $request)
     {
         $user = Auth::guard('estabelecimento')->user();
-    
+
         Auth::guard('estabelecimento')->logout();
-    
+
         $user->delete();
-    
+
         return redirect('/');
     }
-    
 }
