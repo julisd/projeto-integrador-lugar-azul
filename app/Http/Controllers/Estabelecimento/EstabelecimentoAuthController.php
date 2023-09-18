@@ -113,6 +113,9 @@ class EstabelecimentoAuthController extends Controller
             'uf' => $request->uf,
         ]);
 
+        $status = 'pendente';
+
+
         // Crie o estabelecimento associando o endereço
         Estabelecimento::create([
             'name' => $request->name,
@@ -122,6 +125,8 @@ class EstabelecimentoAuthController extends Controller
             'description' => $request->description,
             'category' => $request->category,
             'endereco_id' => $endereco->id, // Associar o endereço criado ao estabelecimento
+            'status' => $status, // Defina o status como "pendente"
+
         ]);
 
         return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
@@ -147,14 +152,15 @@ class EstabelecimentoAuthController extends Controller
             'cnpj' => 'required|string',
             'description' => 'required|string',
             'category' => 'required|string',
-            'cep' => 'required|string|regex:/^\d{5}-\d{3}$/',
-            'logradouro' => 'required|string|max:255',
-            'numero' => 'required|string|max:10',
-            'complemento' => 'nullable|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'cidade' => 'required|string|max:255',
-            'uf' => 'required|string|max:2',
+            // 'cep' => 'required|string|regex:/^\d{5}-\d{3}$/',
+            // 'logradouro' => 'required|string|max:255',
+            // 'numero' => 'required|string|max:10',
+            // 'complemento' => 'nullable|string|max:255',
+            // 'bairro' => 'required|string|max:255',
+            // 'cidade' => 'required|string|max:255',
+            // 'uf' => 'required|string|max:2',
         ]);
+        
 
         $user->name = $request->name;
         $user->email = $request->email;
@@ -162,22 +168,8 @@ class EstabelecimentoAuthController extends Controller
         $user->description = $request->description;
         $user->category = $request->category;
 
-        // Carregue o relacionamento 'endereco' se já existir
-        $user = Auth::user()->load('endereco');
-
-
-        // Verifique se o relacionamento 'endereco' está carregado antes de acessá-lo
-        if ($user->endereco) {
-            $user->endereco->cep = $request->cep;
-            $user->endereco->logradouro = $request->logradouro;
-            $user->endereco->numero = $request->numero;
-            $user->endereco->complemento = $request->complemento;
-            $user->endereco->bairro = $request->bairro;
-            $user->endereco->cidade = $request->cidade;
-            $user->endereco->uf = $request->uf;
-        }
-
-        $user->push(); // Salvar o modelo principal e suas relações
+     
+        $user->save(); // Salvar o modelo principal e suas relações
 
         return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
     }

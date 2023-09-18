@@ -71,5 +71,11 @@ Route::prefix('admin')->group(function () {
     Route::post('/excluir', [AdminController::class, 'excluirConta'])->name('admin.excluir');
     Route::post('/excluirConta', [AdminController::class, 'excluirConta'])->name('admin.excluirConta');  
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/verificarEstabelecimentos', [AdminController::class, 'verificarEstabelecimentos'])->name('admin.verificarEstabelecimentos');
+    Route::post('/aprovarEstabelecimento/{id}', [AdminController::class, 'aprovarEstabelecimento'])
+    ->name('admin.aprovarEstabelecimento');
+    Route::post('/negarEstabelecimento/{id}', [AdminController::class, 'negarEstabelecimento'])
+    ->name('admin.negarEstabelecimento');
+
 });
 

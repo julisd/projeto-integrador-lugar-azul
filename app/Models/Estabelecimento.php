@@ -18,11 +18,12 @@ class Estabelecimento extends Authenticatable  implements CanResetPassword
 
     protected $table = 'estabelecimentos';
     protected $fillable = [
-        'name', 'cnpj', 'email', 'password', 'description', 'category',
+        'name', 'cnpj', 'email', 'password', 'description', 'category', 'status'
     ];
    
     public function endereco()
     {
         return $this->belongsTo(Endereco::class);
     }
+    
 }
