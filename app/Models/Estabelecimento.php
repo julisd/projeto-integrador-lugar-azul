@@ -23,7 +23,7 @@ class Estabelecimento extends Authenticatable  implements CanResetPassword
    
     public function endereco()
     {
-        return $this->belongsTo(Endereco::class);
+        return $this->hasOne(Endereco::class, 'estabelecimento_id');
     }
     
 }

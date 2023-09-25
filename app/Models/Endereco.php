@@ -11,11 +11,11 @@ class Endereco extends Model
     protected $table = 'enderecos';
 
     protected $fillable = [
-        'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'uf',
+        'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'uf', 'estabelecimento_id',
     ];
 
     public function estabelecimento()
     {
-        return $this->hasOne(Estabelecimento::class);
+        return $this->belongsTo(Estabelecimento::class);
     }
 }

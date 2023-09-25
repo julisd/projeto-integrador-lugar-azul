@@ -97,14 +97,22 @@ class AdminController extends Controller
         return redirect('/');
     }
 
+    public function detalhesEstabelecimento($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        return view('admin.detalhesEstabelecimento', compact('estabelecimento'));
+    }
+
+
     public function verificarEstabelecimentos()
     {
         // Recupere uma lista de contas pendentes (status 'pendente') de estabelecimentos
-        $estabelecimentosPendentes = Estabelecimento::where('status', 'pendente')->get();
-    
+        $estabelecimentosPendentes = Estabelecimento::where('status', 'pendente')->with('endereco')->get();
+
+
         return view('admin.verificarEstabelecimentos', compact('estabelecimentosPendentes'));
     }
-    
+
     public function aprovarEstabelecimento($id)
     {
         $estabelecimento = Estabelecimento::findOrFail($id);

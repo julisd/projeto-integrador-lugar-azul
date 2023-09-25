@@ -16,12 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('cnpj')->unique();
             $table->string('email')->unique();
-            $table->string('description');
             $table->string('password');
+            $table->string('description');
             $table->string('category');
             $table->string('status');
             $table->timestamps();
         });
+        
     }
 
     /**

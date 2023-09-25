@@ -84,11 +84,6 @@ class EstabelecimentoAuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'description' => 'required|string',
             'category' => 'required|string',
-            'cnpj' => [
-                'required',
-                Rule::unique('estabelecimentos'),
-                'regex:/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/',
-            ],
             'cep' => 'required|string',
             'logradouro' => 'required|string|max:255',
             'numero' => 'required|string|max:10',
@@ -102,7 +97,17 @@ class EstabelecimentoAuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Crie o endereço
+        $estabelecimento = Estabelecimento::create([
+            'name' => $request->name,
+            'cnpj' => $request->cnpj,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'description' => $request->description,
+            'category' => $request->category,
+            'status' => 'pendente', // Defina o status como "pendente"
+        ]);
+    
+        // Crie o endereço associando-o ao estabelecimento
         $endereco = Endereco::create([
             'cep' => $request->cep,
             'logradouro' => $request->logradouro,
@@ -111,24 +116,9 @@ class EstabelecimentoAuthController extends Controller
             'bairro' => $request->bairro,
             'cidade' => $request->cidade,
             'uf' => $request->uf,
+            'estabelecimento_id' => $estabelecimento->id, // Associe o endereço ao estabelecimento
         ]);
-
-        $status = 'pendente';
-
-
-        // Crie o estabelecimento associando o endereço
-        Estabelecimento::create([
-            'name' => $request->name,
-            'cnpj' => $request->cnpj,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'description' => $request->description,
-            'category' => $request->category,
-            'endereco_id' => $endereco->id, // Associar o endereço criado ao estabelecimento
-            'status' => $status, // Defina o status como "pendente"
-
-        ]);
-
+        
         return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
     }
 
@@ -145,36 +135,61 @@ class EstabelecimentoAuthController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-
+        
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
             'cnpj' => 'required|string',
             'description' => 'required|string',
             'category' => 'required|string',
-            // 'cep' => 'required|string|regex:/^\d{5}-\d{3}$/',
-            // 'logradouro' => 'required|string|max:255',
-            // 'numero' => 'required|string|max:10',
-            // 'complemento' => 'nullable|string|max:255',
-            // 'bairro' => 'required|string|max:255',
-            // 'cidade' => 'required|string|max:255',
-            // 'uf' => 'required|string|max:2',
+            'cep' => 'required|string',
+            'logradouro' => 'required|string|max:255',
+            'numero' => 'required|string|max:10',
+            'complemento' => 'nullable|string|max:255',
+            'bairro' => 'required|string|max:255',
+            'cidade' => 'required|string|max:255',
+            'uf' => 'required|string|max:2',
         ]);
         
-
+        // Atualize os campos de endereço no modelo do usuário
         $user->name = $request->name;
         $user->email = $request->email;
         $user->cnpj = $request->cnpj;
         $user->description = $request->description;
         $user->category = $request->category;
+        $user->status = 'pendente';
 
-     
-        $user->save(); // Salvar o modelo principal e suas relações
-
+    
+        // Verifique se o usuário já possui um endereço ou não
+        if (!$user->endereco) {
+            $user->endereco()->create([
+                'cep' => $request->cep,
+                'logradouro' => $request->logradouro,
+                'numero' => $request->numero,
+                'complemento' => $request->complemento,
+                'bairro' => $request->bairro,
+                'cidade' => $request->cidade,
+                'uf' => $request->uf,
+            ]);
+        } else {
+            // Se o usuário já possui um endereço, atualize-o
+            $user->endereco->cep = $request->cep;
+            $user->endereco->logradouro = $request->logradouro;
+            $user->endereco->numero = $request->numero;
+            $user->endereco->complemento = $request->complemento;
+            $user->endereco->bairro = $request->bairro;
+            $user->endereco->cidade = $request->cidade;
+            $user->endereco->uf = $request->uf;
+            $user->endereco->save();
+        }
+    
+        // Salvar o modelo principal
+        $user->save();
+    
         return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
     }
-
-
+    
+    
 
     public function logout(Request $request)
     {

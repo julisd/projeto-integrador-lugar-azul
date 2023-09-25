@@ -9,6 +9,7 @@ class CreateEnderecosTable extends Migration
     {
         Schema::create('enderecos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('estabelecimento_id'); // Chave estrangeira para associar ao estabelecimento
             $table->string('cep', 9);
             $table->string('logradouro');
             $table->string('numero')->nullable();
@@ -16,8 +17,13 @@ class CreateEnderecosTable extends Migration
             $table->string('bairro');
             $table->string('cidade');
             $table->string('uf', 2);
+            
             $table->timestamps();
+
+            // Chave estrangeira
+            $table->foreign('estabelecimento_id')->references('id')->on('estabelecimentos');
         });
+        
     }
 
     public function down()
