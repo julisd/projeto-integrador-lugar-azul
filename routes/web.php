@@ -39,6 +39,12 @@ Route::prefix('estabelecimento')->group(function () {
 
 });
 
+Route::get('/obter-enderecos', [EstabelecimentoAuthController::class, 'getEnderecos'])->name('estabelecimento.getEnderecos');
+Route::get('/obter-todos-estabelecimentos-ativos', [EstabelecimentoAuthController::class, 'getAllActiveEstabelecimentos'])->name('estabelecimento.getAllActiveEstabelecimentos');
+Route::get('/obter-categorias', [EstabelecimentoAuthController::class, 'getCategories'])->name('estabelecimento.getCategories');
+Route::get('/obter-estabelecimentos-por-categoria', [EstabelecimentoAuthController::class, 'getEstabelecimentosPorCategoria'])->name('estabelecimento.getEstabelecimentosPorCategoria');
+
+
 Route::prefix('pessoa')->group(function () {
     Route::get('login', [PessoaAuthController::class, 'showLoginForm'])->name('pessoa.login');
     Route::post('login', [PessoaAuthController::class, 'login'])->middleware('guest:pessoa_usuaria'); // Usando o middleware guest para garantir que usuários autenticados não acessem

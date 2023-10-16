@@ -106,7 +106,7 @@ class EstabelecimentoAuthController extends Controller
             'category' => $request->category,
             'status' => 'pendente', // Defina o status como "pendente"
         ]);
-    
+
         // Crie o endereço associando-o ao estabelecimento
         $endereco = Endereco::create([
             'cep' => $request->cep,
@@ -118,7 +118,7 @@ class EstabelecimentoAuthController extends Controller
             'uf' => $request->uf,
             'estabelecimento_id' => $estabelecimento->id, // Associe o endereço ao estabelecimento
         ]);
-        
+
         return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
     }
 
@@ -135,7 +135,7 @@ class EstabelecimentoAuthController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        
+
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
@@ -150,7 +150,7 @@ class EstabelecimentoAuthController extends Controller
             'cidade' => 'required|string|max:255',
             'uf' => 'required|string|max:2',
         ]);
-        
+
         // Atualize os campos de endereço no modelo do usuário
         $user->name = $request->name;
         $user->email = $request->email;
@@ -159,7 +159,7 @@ class EstabelecimentoAuthController extends Controller
         $user->category = $request->category;
         $user->status = 'pendente';
 
-    
+
         // Verifique se o usuário já possui um endereço ou não
         if (!$user->endereco) {
             $user->endereco()->create([
@@ -182,14 +182,14 @@ class EstabelecimentoAuthController extends Controller
             $user->endereco->uf = $request->uf;
             $user->endereco->save();
         }
-    
+
         // Salvar o modelo principal
         $user->save();
-    
+
         return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
     }
-    
-    
+
+
 
     public function logout(Request $request)
     {
@@ -208,4 +208,70 @@ class EstabelecimentoAuthController extends Controller
 
         return redirect('/');
     }
+
+    public function getEnderecos()
+    {
+        // Recupere todos os endereços do banco de dados
+        $enderecos = Endereco::all();
+
+        return $enderecos;
+    }
+
+    public function getAllActiveEstabelecimentos(Request $request)
+    {
+        $city = $request->input('city');
+
+        $estabelecimentos = Estabelecimento::where('status', 'aprovado')
+            ->whereHas('endereco', function ($query) use ($city) {
+                $query->where('cidade', $city);
+            })
+            ->with('endereco') // Certifique-se de carregar os endereços relacionados
+            ->get();
+
+        if ($estabelecimentos->isEmpty()) {
+            \Log::info('Nenhum estabelecimento ativo encontrado na cidade: ' . $city);
+        } else {
+            foreach ($estabelecimentos as $estabelecimento) {
+                \Log::info('Estabelecimento encontrado: ' . $estabelecimento->name);
+            }
+        }
+
+        return $estabelecimentos;
+    }
+
+
+    public function getCategories()
+    {
+        $categories = Estabelecimento::distinct('category')->pluck('category');
+        \Log::info('Categorias: ' . $categories);
+        return response()->json($categories);
+    }
+
+    public function getEstabelecimentosPorCategoria(Request $request)
+    {
+        $category = $request->input('category');
+        $city = $request->input('city');
+    
+        $estabelecimentos = Estabelecimento::where('status', 'aprovado')
+            ->where('category', $category)
+            ->whereHas('endereco', function ($query) use ($city) {
+                $query->where('cidade', $city);
+            })
+            ->get();
+    
+        if ($estabelecimentos->isEmpty()) {
+            \Log::info('Nenhum estabelecimento ativo encontrado na categoria ' . $category . ' na cidade ' . $city);
+            return response()->json([]);
+        } else {
+            $estabelecimentosData = $estabelecimentos->map(function ($estabelecimento) {
+                return [
+                    'name' => $estabelecimento->name,
+                    'category' => $estabelecimento->category,
+                    'endereco' => $estabelecimento->endereco // Certifique-se de que 'endereco' está corretamente relacionado ao modelo
+                ];
+            });
+            return response()->json($estabelecimentosData);
+        }
+    }
+    
 }
