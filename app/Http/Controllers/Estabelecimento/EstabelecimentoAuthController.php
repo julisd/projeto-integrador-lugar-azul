@@ -28,7 +28,7 @@ class EstabelecimentoAuthController extends Controller
 
         return response()->json($estabelecimento);
     }
-    
+
     public function sendResetLinkEmail(Request $request)
     {
         $response = Password::broker('estabelecimentos')->sendResetLink(
@@ -141,8 +141,12 @@ class EstabelecimentoAuthController extends Controller
 
     public function editar()
     {
-        return view('estabelecimento.editar');
+        $user = Auth::user();
+        $endereco = $user->endereco; // Obtém o endereço associado ao estabelecimento
+
+        return view('estabelecimento.editar', ['user' => $user, 'endereco' => $endereco]);
     }
+
 
     public function update(Request $request)
     {
@@ -171,7 +175,6 @@ class EstabelecimentoAuthController extends Controller
         $user->category = $request->category;
         $user->status = 'pendente';
 
-
         // Verifique se o usuário já possui um endereço ou não
         if (!$user->endereco) {
             $user->endereco()->create([
@@ -188,7 +191,14 @@ class EstabelecimentoAuthController extends Controller
             $user->endereco->cep = $request->cep;
             $user->endereco->logradouro = $request->logradouro;
             $user->endereco->numero = $request->numero;
-            $user->endereco->complemento = $request->complemento;
+
+            // Verificação e atualização do campo "complemento"
+            if ($request->has('complemento')) {
+                $user->endereco->complemento = $request->complemento;
+            } else {
+                $user->endereco->complemento = null; // Ou o valor padrão desejado
+            }
+
             $user->endereco->bairro = $request->bairro;
             $user->endereco->cidade = $request->cidade;
             $user->endereco->uf = $request->uf;
@@ -200,6 +210,7 @@ class EstabelecimentoAuthController extends Controller
 
         return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
     }
+
 
 
 

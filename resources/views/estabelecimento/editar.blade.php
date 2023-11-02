@@ -71,7 +71,7 @@
 
                         <div class="form-group">
                             <label for="cep">CEP</label>
-                            <input id="cep" type="number" class="form-control @error('cep') is-invalid @enderror" name="cep" value="{{ Auth::user()->cep }}" required>
+                            <input id="cep" type="number" class="form-control @error('cep') is-invalid @enderror" name="cep" value="{{ $user->endereco->cep }}" required>
                             @error('cep')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -81,7 +81,7 @@
 
                         <div class="form-group">
                             <label for="logradouro">Logradouro</label>
-                            <input id="logradouro" type="text" class="form-control @error('logradouro') is-invalid @enderror" name="logradouro" value="{{ Auth::user()->logradouro }}" required>
+                            <input id="logradouro" type="text" class="form-control @error('logradouro') is-invalid @enderror" name="logradouro" value="{{ $user->endereco->logradouro }}" required>
                             @error('logradouro')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -91,7 +91,7 @@
 
                         <div class="form-group">
                             <label for="numero">Número</label>
-                            <input id="numero" type="number" class="form-control @error('numero') is-invalid @enderror" name="numero" value="{{ Auth::user()->numero }}" required>
+                            <input id="numero" type="number" class="form-control @error('numero') is-invalid @enderror" name="numero" value="{{ $user->endereco->numero }}" required>
                             @error('numero')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -101,7 +101,7 @@
 
                         <div class="form-group">
                             <label for="complemento">Complemento</label>
-                            <input id="complemento" type="text" class="form-control @error('complemento') is-invalid @enderror" name="complemento" value="{{ Auth::user()->complemento }}" required>
+                            <input id="complemento" type="text" class="form-control @error('complemento') is-invalid @enderror" name="complemento" value="{{ $user->endereco->complemento }}" required>
                             @error('complemento')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -111,7 +111,7 @@
 
                         <div class="form-group">
                             <label for="bairro">Bairro</label>
-                            <input id="bairro" type="text" class="form-control @error('bairro') is-invalid @enderror" name="bairro" value="{{ Auth::user()->bairro }}" required>
+                            <input id="bairro" type="text" class="form-control @error('bairro') is-invalid @enderror" name="bairro" value="{{ $user->endereco->bairro }}" required>
                             @error('bairro')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -121,7 +121,7 @@
 
                         <div class="form-group">
                             <label for="cidade">Cidade</label>
-                            <input id="cidade" type="text" class="form-control @error('cidade') is-invalid @enderror" name="cidade" value="{{ Auth::user()->cidade }}" required>
+                            <input id="cidade" type="text" class="form-control @error('cidade') is-invalid @enderror" name="cidade" value="{{ $user->endereco->cidade }}" required>
                             @error('cidade')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -133,33 +133,33 @@
                             <label for="uf">UF</label>
                             <select id="uf" class="form-control @error('uf') is-invalid @enderror" name="uf" required>
                                 <option value="" disabled selected>Selecione um estado</option>
-                                <option value="AC" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'AC' ? 'selected' : '' }}>Acre</option>
-                                <option value="AL" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'AL' ? 'selected' : '' }}>Alagoas</option>
-                                <option value="AP" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'AP' ? 'selected' : '' }}>Amapá</option>
-                                <option value="AM" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'AM' ? 'selected' : '' }}>Amazonas</option>
-                                <option value="BA" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'BA' ? 'selected' : '' }}>Bahia</option>
-                                <option value="CE" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'CE' ? 'selected' : '' }}>Ceará</option>
-                                <option value="DF" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'DF' ? 'selected' : '' }}>Distrito Federal</option>
-                                <option value="ES" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'ES' ? 'selected' : '' }}>Espírito Santo</option>
-                                <option value="GO" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'GO' ? 'selected' : '' }}>Goiás</option>
-                                <option value="MA" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'MA' ? 'selected' : '' }}>Maranhão</option>
-                                <option value="MT" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'MT' ? 'selected' : '' }}>Mato Grosso</option>
-                                <option value="MS" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'MS' ? 'selected' : '' }}>Mato Grosso do Sul</option>
-                                <option value="MG" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'MG' ? 'selected' : '' }}>Minas Gerais</option>
-                                <option value="PA" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'PA' ? 'selected' : '' }}>Pará</option>
-                                <option value="PB" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'PB' ? 'selected' : '' }}>Paraíba</option>
-                                <option value="PR" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'PR' ? 'selected' : '' }}>Paraná</option>
-                                <option value="PE" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'PE' ? 'selected' : '' }}>Pernambuco</option>
-                                <option value="PI" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'PI' ? 'selected' : '' }}>Piauí</option>
-                                <option value="RJ" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'RJ' ? 'selected' : '' }}>Rio de Janeiro</option>
-                                <option value="RN" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'RN' ? 'selected' : '' }}>Rio Grande do Norte</option>
-                                <option value="RS" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'RS' ? 'selected' : '' }}>Rio Grande do Sul</option>
-                                <option value="RO" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'RO' ? 'selected' : '' }}>Rondônia</option>
-                                <option value="RR" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'RR' ? 'selected' : '' }}>Roraima</option>
-                                <option value="SC" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'SC' ? 'selected' : '' }}>Santa Catarina</option>
-                                <option value="SP" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'SP' ? 'selected' : '' }}>São Paulo</option>
-                                <option value="SE" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'SE' ? 'selected' : '' }}>Sergipe</option>
-                                <option value="TO" {{ old('uf', optional(Auth::user()->endereco)->uf) === 'TO' ? 'selected' : '' }}>Tocantins</option>
+                                <option value="AC" {{ old('uf', optional($user->endereco)->uf) === 'AC' ? 'selected' : '' }}>Acre</option>
+                                <option value="AL" {{ old('uf', optional($user->endereco)->uf) === 'AL' ? 'selected' : '' }}>Alagoas</option>
+                                <option value="AP" {{ old('uf', optional($user->endereco)->uf) === 'AP' ? 'selected' : '' }}>Amapá</option>
+                                <option value="AM" {{ old('uf', optional($user->endereco)->uf) === 'AM' ? 'selected' : '' }}>Amazonas</option>
+                                <option value="BA" {{ old('uf', optional($user->endereco)->uf) === 'BA' ? 'selected' : '' }}>Bahia</option>
+                                <option value="CE" {{ old('uf', optional($user->endereco)->uf) === 'CE' ? 'selected' : '' }}>Ceará</option>
+                                <option value="DF" {{ old('uf', optional($user->endereco)->uf) === 'DF' ? 'selected' : '' }}>Distrito Federal</option>
+                                <option value="ES" {{ old('uf', optional($user->endereco)->uf) === 'ES' ? 'selected' : '' }}>Espírito Santo</option>
+                                <option value="GO" {{ old('uf', optional($user->endereco)->uf) === 'GO' ? 'selected' : '' }}>Goiás</option>
+                                <option value="MA" {{ old('uf', optional($user->endereco)->uf) === 'MA' ? 'selected' : '' }}>Maranhão</option>
+                                <option value="MT" {{ old('uf', optional($user->endereco)->uf) === 'MT' ? 'selected' : '' }}>Mato Grosso</option>
+                                <option value="MS" {{ old('uf', optional($user->endereco)->uf) === 'MS' ? 'selected' : '' }}>Mato Grosso do Sul</option>
+                                <option value="MG" {{ old('uf', optional($user->endereco)->uf) === 'MG' ? 'selected' : '' }}>Minas Gerais</option>
+                                <option value="PA" {{ old('uf', optional($user->endereco)->uf) === 'PA' ? 'selected' : '' }}>Pará</option>
+                                <option value="PB" {{ old('uf', optional($user->endereco)->uf) === 'PB' ? 'selected' : '' }}>Paraíba</option>
+                                <option value="PR" {{ old('uf', optional($user->endereco)->uf) === 'PR' ? 'selected' : '' }}>Paraná</option>
+                                <option value="PE" {{ old('uf', optional($user->endereco)->uf) === 'PE' ? 'selected' : '' }}>Pernambuco</option>
+                                <option value="PI" {{ old('uf', optional($user->endereco)->uf) === 'PI' ? 'selected' : '' }}>Piauí</option>
+                                <option value="RJ" {{ old('uf', optional($user->endereco)->uf) === 'RJ' ? 'selected' : '' }}>Rio de Janeiro</option>
+                                <option value="RN" {{ old('uf', optional($user->endereco)->uf) === 'RN' ? 'selected' : '' }}>Rio Grande do Norte</option>
+                                <option value="RS" {{ old('uf', optional($user->endereco)->uf) === 'RS' ? 'selected' : '' }}>Rio Grande do Sul</option>
+                                <option value="RO" {{ old('uf', optional($user->endereco)->uf) === 'RO' ? 'selected' : '' }}>Rondônia</option>
+                                <option value="RR" {{ old('uf', optional($user->endereco)->uf) === 'RR' ? 'selected' : '' }}>Roraima</option>
+                                <option value="SC" {{ old('uf', optional($user->endereco)->uf) === 'SC' ? 'selected' : '' }}>Santa Catarina</option>
+                                <option value="SP" {{ old('uf', optional($user->endereco)->uf) === 'SP' ? 'selected' : '' }}>São Paulo</option>
+                                <option value="SE" {{ old('uf', optional($user->endereco)->uf) === 'SE' ? 'selected' : '' }}>Sergipe</option>
+                                <option value="TO" {{ old('uf', optional($user->endereco)->uf) === 'TO' ? 'selected' : '' }}>Tocantins</option>
                             </select>
                             @error('uf')
                             <span class="invalid-feedback" role="alert">
@@ -167,6 +167,8 @@
                             </span>
                             @enderror
                         </div>
+
+
                         <div class="form-group mb-0">
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Salvar Alterações') }}
