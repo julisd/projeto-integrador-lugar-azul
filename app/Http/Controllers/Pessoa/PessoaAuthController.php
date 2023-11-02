@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use App\Http\Controllers\Controller;
 use App\Models\PessoaUsuaria;
 use Illuminate\Http\Request;
+use App\Models\Endereco;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -18,6 +19,7 @@ class PessoaAuthController extends Controller
     {
         return view('auth.pessoa.login');
     }
+
 
     public function home()
     {

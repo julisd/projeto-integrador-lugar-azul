@@ -34,10 +34,12 @@
         </div>
     </div>
 </div>
-
 <script>
-    let map;
+        let map;
     let estabelecimentosList = document.getElementById('estabelecimentos-list');
+    let infowindow;
+    let addedEstabelecimentos = [];
+    let markers = [];
 
     function initMap() {
         const blumenauCoords = {
@@ -48,9 +50,60 @@
             center: blumenauCoords,
             zoom: 12 // Zoom inicial do mapa
         });
-
-        getLocation();
+        infowindow = new google.maps.InfoWindow();
         getCategories();
+    }
+
+    function addMarkerWithInfo(estabelecimento, map) {
+        const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
+        console.log("Endereço para geocodificação:", address);
+
+        if (address) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({
+                address: address
+            }, (results, status) => {
+                if (status === 'OK') {
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location,
+                        title: estabelecimento.name,
+                    });
+                    console.log("Marcador adicionado:", marker);
+
+                    markers.push(marker);
+
+                    const infowindow = new google.maps.InfoWindow({
+                        content: `<div><strong>${estabelecimento.name}</strong><br>${estabelecimento.description}</div>`
+                    });
+
+                    console.log("InfoWindow criada:", infowindow);
+
+                    marker.addListener('click', () => {
+                        infowindow.open(map, marker); // Abre a janela de informações no contexto correto
+                        console.log("Janela de informações aberta");
+                        loadEstabelecimentoInfo(estabelecimento.id);
+                    });
+
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `Nome: ${estabelecimento.name}, Categoria: ${estabelecimento.category}`;
+
+                    if (!addedEstabelecimentos.includes(estabelecimento.id)) {
+                        listItem.addEventListener('click', () => {
+                            loadEstabelecimentoInfo(estabelecimento.id);
+                            console.log("Detalhes do estabelecimento carregados");
+                            showEstabelecimentoInfo(`<div><strong>${estabelecimento.name}</strong><br>${estabelecimento.description}</div>`);
+                        });
+                        estabelecimentosList.appendChild(listItem);
+                        addedEstabelecimentos.push(estabelecimento.id);
+                    }
+                } else {
+                    console.error('Erro ao geocodificar endereço:', status);
+                }
+            });
+        } else {
+            console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
+        }
     }
 
     function getCategories() {
@@ -79,27 +132,12 @@
             });
     }
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                // Use userLocation para centrar o mapa ou realizar outras ações.
-            });
-        } else {
-            alert("A geolocalização não é suportada pelo seu navegador.");
-        }
-    }
-
-    let markers = [];
-
     function searchPlaces() {
-        // Limpa os marcadores no mapa
+        console.log("Função searchPlaces foi chamada");
         clearMarkers();
 
-        estabelecimentosList.innerHTML = ''; // Limpa a lista de estabelecimentos ao pesquisar
+        estabelecimentosList.innerHTML = '';
+        addedEstabelecimentos = [];
 
         const category = document.getElementById('category').value;
         const city = document.getElementById('city').value;
@@ -111,39 +149,10 @@
                 .then(response => response.json())
                 .then(data => {
                     const estabelecimentos = data;
+                    console.log("Estabelecimentos obtidos:", estabelecimentos);
 
                     estabelecimentos.forEach(estabelecimento => {
-                        const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
-                        console.log("Endereço a ser geocodificado:", address);
-                        if (address) {
-                            const geocoder = new google.maps.Geocoder();
-                            geocoder.geocode({
-                                address: address
-                            }, (results, status) => {
-                                console.log("Resultado da geocodificação:", results);
-                                if (status === 'OK') {
-                                    const marker = new google.maps.Marker({
-                                        map: map,
-                                        position: results[0].geometry.location,
-                                        title: estabelecimento.name
-                                    });
-
-                                    markers.push(marker); // Adiciona o marcador ao array de marcadores
-
-                                    const listItem = document.createElement('li');
-                                    listItem.textContent = `Nome: ${estabelecimento.name}, \br
-                                    Categoria: ${estabelecimento.category}`;
-                                    listItem.addEventListener('click', () => {
-                                        google.maps.event.trigger(marker, 'click'); // Ativa o evento de clique do marcador ao clicar no item da lista
-                                    });
-                                    estabelecimentosList.appendChild(listItem);
-                                } else {
-                                    console.error('Erro ao geocodificar endereço:', status);
-                                }
-                            });
-                        } else {
-                            console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
-                        }
+                        addMarkerWithInfo(estabelecimento, map);
                     });
                 })
                 .catch(error => {
@@ -152,52 +161,105 @@
         }
     }
 
+
     function addAllMarkersAndList(city) {
-        fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
-            .then(response => response.json())
+    console.log("Função addAllMarkersAndList foi chamada");
+    estabelecimentosList.innerHTML = ''; // Limpar a lista de estabelecimentos antes de adicionar novos itens
+    addedEstabelecimentos = [];
+    fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
+        .then(response => response.json())
+        .then(data => {
+            const estabelecimentos = data;
+            console.log("Estabelecimentos ativos obtidos:", estabelecimentos);
+
+            estabelecimentos.forEach(estabelecimento => {
+                const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
+                if (address) {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({
+                        address: address
+                    }, (results, status) => {
+                        if (status === 'OK') {
+                            const marker = new google.maps.Marker({
+                                map: map,
+                                position: results[0].geometry.location,
+                                title: estabelecimento.name
+                            });
+
+                            markers.push(marker);
+
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `Nome: ${estabelecimento.name}, Categoria: ${estabelecimento.category}`;
+                            listItem.addEventListener('click', () => {
+                                loadEstabelecimentoInfo(estabelecimento.id);
+                            });
+                            estabelecimentosList.appendChild(listItem);
+
+                            // Exibir a janela de detalhes ao adicionar um marcador
+                            const infoContent = `
+                                <div>
+                                    <strong>${estabelecimento.name}</strong><br>
+                                    Categoria: ${estabelecimento.category}<br>
+                                    Endereço: ${address}<br>
+                                    <a href="${estabelecimento.link}" target="_blank">Saiba mais</a>
+                                </div>
+                            `;
+                            const infowindow = new google.maps.InfoWindow({
+                                content: infoContent
+                            });
+
+                            marker.addListener('click', () => {
+                                infowindow.open(map, marker);
+                            });
+                        } else {
+                            console.error('Erro ao geocodificar endereço:', status);
+                        }
+                    });
+                } else {
+                    console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao obter estabelecimentos ativos:', error);
+        });
+}
+
+
+
+
+    function loadEstabelecimentoInfo(id) {
+        console.log(`Carregando informações para o estabelecimento com ID ${id}...`);
+        fetch(`/obter-dados-estabelecimento?id=${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao obter os dados do estabelecimento');
+                }
+                return response.json();
+            })
             .then(data => {
-                const estabelecimentos = data;
-
-                estabelecimentos.forEach(estabelecimento => {
-                    const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
-                    console.log("Endereço a ser geocodificado:", address);
-                    if (address) {
-                        const geocoder = new google.maps.Geocoder();
-                        geocoder.geocode({
-                            address: address
-                        }, (results, status) => {
-                            console.log("Resultado da geocodificação:", results);
-                            if (status === 'OK') {
-                                const marker = new google.maps.Marker({
-                                    map: map,
-                                    position: results[0].geometry.location,
-                                    title: estabelecimento.name
-                                });
-
-                                markers.push(marker); // Adiciona o marcador ao array de marcadores
-
-                                const listItem = document.createElement('li');
-                                listItem.textContent = `Nome: ${estabelecimento.name}, Categoria: ${estabelecimento.category}`;
-                                listItem.addEventListener('click', () => {
-                                    google.maps.event.trigger(marker, 'click'); // Ativa o evento de clique do marcador ao clicar no item da lista
-                                });
-                                estabelecimentosList.appendChild(listItem);
-                            } else {
-                                console.error('Erro ao geocodificar endereço:', status);
-                            }
-                        });
-                    } else {
-                        console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
-                    }
-                });
+                console.log('Dados do estabelecimento obtidos:', data);
+                // Exibir as informações do estabelecimento na janela de informações
+                const estabelecimentoInfo = `Nome: ${data.name}, Descrição: ${data.description}, Endereço: ${data.endereco}`;
+                showEstabelecimentoInfo(estabelecimentoInfo);
             })
             .catch(error => {
-                console.error('Erro ao obter estabelecimentos ativos:', error);
+                console.error('Erro durante a solicitação do estabelecimento:', error);
             });
     }
 
+
+    function showEstabelecimentoInfo(info) {
+        if (infowindow) {
+            infowindow.close(); // Fecha a janela de informações anterior, se estiver aberta
+        }
+        infowindow = new google.maps.InfoWindow({
+            content: info
+        });
+        infowindow.open(map);
+    }
+
     function clearMarkers() {
-        // Limpa todos os marcadores do mapa e do array de marcadores
         markers.forEach(marker => marker.setMap(null));
         markers = [];
     }

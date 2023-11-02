@@ -17,6 +17,18 @@ class EstabelecimentoAuthController extends Controller
 
     use SendsPasswordResetEmails;
 
+    public function obterDadosEstabelecimento(Request $request)
+    {
+        $id = $request->input('id');
+        $estabelecimento = Estabelecimento::find($id);
+
+        if (!$estabelecimento) {
+            return response()->json(['error' => 'Estabelecimento não encontrado'], 404);
+        }
+
+        return response()->json($estabelecimento);
+    }
+    
     public function sendResetLinkEmail(Request $request)
     {
         $response = Password::broker('estabelecimentos')->sendResetLink(
@@ -251,14 +263,14 @@ class EstabelecimentoAuthController extends Controller
     {
         $category = $request->input('category');
         $city = $request->input('city');
-    
+
         $estabelecimentos = Estabelecimento::where('status', 'aprovado')
             ->where('category', $category)
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
             })
             ->get();
-    
+
         if ($estabelecimentos->isEmpty()) {
             \Log::info('Nenhum estabelecimento ativo encontrado na categoria ' . $category . ' na cidade ' . $city);
             return response()->json([]);
@@ -273,5 +285,4 @@ class EstabelecimentoAuthController extends Controller
             return response()->json($estabelecimentosData);
         }
     }
-    
 }
