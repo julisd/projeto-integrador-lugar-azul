@@ -33,6 +33,15 @@
                             @enderror
                         </div>
 
+                        <div class="form-group">
+                            <label for="telephone">Telefone </label>
+                            <input id="telephone" type="telephone" class="form-control @error('telephone') is-invalid @enderror" name="telephone" value="{{ Auth::user()->telephone }}" required autocomplete="telephone">
+                            @error('telephone')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
 
                         <div class="form-group">
                             <label for="cnpj">CNPJ</label>
@@ -185,6 +194,7 @@
     $(document).ready(function() {
 
         $('#cnpj').mask('00.000.000/0000-00');
+        $('#telephone').mask('0000000-0000');
 
 
         function limpa_formulário_cep() {

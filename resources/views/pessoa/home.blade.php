@@ -1,5 +1,31 @@
 @extends('layout.app', ['current' => 'home'])
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* Estilos personalizados */
+    .estabelecimento-card {
+        background-color: #f0f8ff;
+        /* Cor de fundo */
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        /* Sombra */
+        cursor: pointer; /* Cursor ao passar por cima */
+    }
+
+    .estabelecimento-name {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .estabelecimento-category {
+        font-style: italic;
+        color: #007bff;
+        /* Cor do texto */
+    }
+</style>
 @section('content')
 <div class="container-fluid">
     <div class="row mb-3">
@@ -30,12 +56,12 @@
         </div>
         <div class="col-md-6">
             <h2>Lista de Estabelecimentos</h2>
-            <ul id="estabelecimentos-list" class="list-group"></ul>
+            <div id="estabelecimentos-list"></div>
         </div>
     </div>
 </div>
 <script>
-        let map;
+    let map;
     let estabelecimentosList = document.getElementById('estabelecimentos-list');
     let infowindow;
     let addedEstabelecimentos = [];
@@ -56,44 +82,56 @@
 
     function addMarkerWithInfo(estabelecimento, map) {
         const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
-        console.log("Endereço para geocodificação:", address);
 
         if (address) {
             const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                address: address
-            }, (results, status) => {
+            geocoder.geocode({ address: address }, (results, status) => {
                 if (status === 'OK') {
                     const marker = new google.maps.Marker({
                         map: map,
                         position: results[0].geometry.location,
                         title: estabelecimento.name,
+                        id: estabelecimento.id
                     });
-                    console.log("Marcador adicionado:", marker);
 
                     markers.push(marker);
 
+                    const infoContent = `
+                        <div>
+                            <strong>${estabelecimento.name}</strong><br>
+                            Categoria: ${estabelecimento.category}<br>
+                            Endereço: ${address}<br>
+                            <a href="/detalhes-estabelecimento/${estabelecimento.id}" target="_blank">Saiba mais</a>
+                        </div>
+                    `;
                     const infowindow = new google.maps.InfoWindow({
-                        content: `<div><strong>${estabelecimento.name}</strong><br>${estabelecimento.description}</div>`
+                        content: infoContent
                     });
 
-                    console.log("InfoWindow criada:", infowindow);
-
                     marker.addListener('click', () => {
-                        infowindow.open(map, marker); // Abre a janela de informações no contexto correto
-                        console.log("Janela de informações aberta");
+                        infowindow.open(map, marker);
                         loadEstabelecimentoInfo(estabelecimento.id);
                     });
 
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `Nome: ${estabelecimento.name}, Categoria: ${estabelecimento.category}`;
+                    const listItem = document.createElement('div');
+                    listItem.classList.add('estabelecimento-card');
+
+                    const name = document.createElement('div');
+                    name.classList.add('estabelecimento-name');
+                    name.textContent = estabelecimento.name;
+
+                    const category = document.createElement('div');
+                    category.classList.add('estabelecimento-category');
+                    category.textContent = estabelecimento.category;
+
+                    listItem.appendChild(name);
+                    listItem.appendChild(category);
 
                     if (!addedEstabelecimentos.includes(estabelecimento.id)) {
                         listItem.addEventListener('click', () => {
                             loadEstabelecimentoInfo(estabelecimento.id);
-                            console.log("Detalhes do estabelecimento carregados");
-                            showEstabelecimentoInfo(`<div><strong>${estabelecimento.name}</strong><br>${estabelecimento.description}</div>`);
                         });
+                        listItem.setAttribute('data-estabelecimento-id', estabelecimento.id);
                         estabelecimentosList.appendChild(listItem);
                         addedEstabelecimentos.push(estabelecimento.id);
                     }
@@ -111,7 +149,6 @@
             .then(response => response.json())
             .then(data => {
                 const categories = data;
-
                 const categoryDropdown = document.getElementById('category');
                 categoryDropdown.innerHTML = '';
 
@@ -133,24 +170,25 @@
     }
 
     function searchPlaces() {
-        console.log("Função searchPlaces foi chamada");
         clearMarkers();
-
         estabelecimentosList.innerHTML = '';
         addedEstabelecimentos = [];
 
         const category = document.getElementById('category').value;
-        const city = document.getElementById('city').value;
+        const city = document.getElementById('city').value.trim();
+
+        if (city === '') {
+            alert('Por favor, digite uma cidade.');
+            return;
+        }
 
         if (category === 'all') {
-            addAllMarkersAndList(city); // Passa a cidade como parâmetro
+            addAllMarkersAndList(city);
         } else {
             fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}`)
                 .then(response => response.json())
                 .then(data => {
                     const estabelecimentos = data;
-                    console.log("Estabelecimentos obtidos:", estabelecimentos);
-
                     estabelecimentos.forEach(estabelecimento => {
                         addMarkerWithInfo(estabelecimento, map);
                     });
@@ -161,72 +199,78 @@
         }
     }
 
-
     function addAllMarkersAndList(city) {
-    console.log("Função addAllMarkersAndList foi chamada");
-    estabelecimentosList.innerHTML = ''; // Limpar a lista de estabelecimentos antes de adicionar novos itens
-    addedEstabelecimentos = [];
-    fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
-        .then(response => response.json())
-        .then(data => {
-            const estabelecimentos = data;
-            console.log("Estabelecimentos ativos obtidos:", estabelecimentos);
+        estabelecimentosList.innerHTML = '';
+        addedEstabelecimentos = [];
 
-            estabelecimentos.forEach(estabelecimento => {
-                const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
-                if (address) {
-                    const geocoder = new google.maps.Geocoder();
-                    geocoder.geocode({
-                        address: address
-                    }, (results, status) => {
-                        if (status === 'OK') {
-                            const marker = new google.maps.Marker({
-                                map: map,
-                                position: results[0].geometry.location,
-                                title: estabelecimento.name
-                            });
+        fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
+            .then(response => response.json())
+            .then(data => {
+                const estabelecimentos = data;
+                estabelecimentos.forEach(estabelecimento => {
+                    const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
+                    if (address) {
+                        const geocoder = new google.maps.Geocoder();
+                        geocoder.geocode({ address: address }, (results, status) => {
+                            if (status === 'OK') {
+                                const marker = new google.maps.Marker({
+                                    map: map,
+                                    position: results[0].geometry.location,
+                                    title: estabelecimento.name,
+                                    id: estabelecimento.id // Incluindo o id no marcador
 
-                            markers.push(marker);
+                                });
 
-                            const listItem = document.createElement('li');
-                            listItem.textContent = `Nome: ${estabelecimento.name}, Categoria: ${estabelecimento.category}`;
-                            listItem.addEventListener('click', () => {
-                                loadEstabelecimentoInfo(estabelecimento.id);
-                            });
-                            estabelecimentosList.appendChild(listItem);
+                                markers.push(marker);
 
-                            // Exibir a janela de detalhes ao adicionar um marcador
-                            const infoContent = `
-                                <div>
-                                    <strong>${estabelecimento.name}</strong><br>
-                                    Categoria: ${estabelecimento.category}<br>
-                                    Endereço: ${address}<br>
-                                    <a href="${estabelecimento.link}" target="_blank">Saiba mais</a>
-                                </div>
-                            `;
-                            const infowindow = new google.maps.InfoWindow({
-                                content: infoContent
-                            });
+                                const listItem = document.createElement('div');
+                                listItem.classList.add('estabelecimento-card');
 
-                            marker.addListener('click', () => {
-                                infowindow.open(map, marker);
-                            });
-                        } else {
-                            console.error('Erro ao geocodificar endereço:', status);
-                        }
-                    });
-                } else {
-                    console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
-                }
+                                const name = document.createElement('div');
+                                name.classList.add('estabelecimento-name');
+                                name.textContent = estabelecimento.name;
+
+                                const category = document.createElement('div');
+                                category.classList.add('estabelecimento-category');
+                                category.textContent = estabelecimento.category;
+
+                                listItem.appendChild(name);
+                                listItem.appendChild(category);
+
+                                listItem.addEventListener('click', () => {
+                                    loadEstabelecimentoInfo(estabelecimento.id);
+                                });
+
+                                estabelecimentosList.appendChild(listItem);
+
+                                const infoContent = `
+                                    <div>
+                                        <strong>${estabelecimento.name}</strong><br>
+                                        Categoria: ${estabelecimento.category}<br>
+                                        Endereço: ${address}<br>
+                                        <a href="/detalhes-estabelecimento/${estabelecimento.id}" target="_blank">Saiba mais</a>
+                                    </div>
+                                `;
+                                const infowindow = new google.maps.InfoWindow({
+                                    content: infoContent
+                                });
+
+                                marker.addListener('click', () => {
+                                    infowindow.open(map, marker);
+                                });
+                            } else {
+                                console.error('Erro ao geocodificar endereço:', status);
+                            }
+                        });
+                    } else {
+                        console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao obter estabelecimentos ativos:', error);
             });
-        })
-        .catch(error => {
-            console.error('Erro ao obter estabelecimentos ativos:', error);
-        });
-}
-
-
-
+    }
 
     function loadEstabelecimentoInfo(id) {
         console.log(`Carregando informações para o estabelecimento com ID ${id}...`);
@@ -239,7 +283,6 @@
             })
             .then(data => {
                 console.log('Dados do estabelecimento obtidos:', data);
-                // Exibir as informações do estabelecimento na janela de informações
                 const estabelecimentoInfo = `Nome: ${data.name}, Descrição: ${data.description}, Endereço: ${data.endereco}`;
                 showEstabelecimentoInfo(estabelecimentoInfo);
             })
@@ -248,10 +291,9 @@
             });
     }
 
-
     function showEstabelecimentoInfo(info) {
         if (infowindow) {
-            infowindow.close(); // Fecha a janela de informações anterior, se estiver aberta
+            infowindow.close();
         }
         infowindow = new google.maps.InfoWindow({
             content: info
@@ -264,5 +306,6 @@
         markers = [];
     }
 </script>
+
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe5MaIMdFA_uVpuz59EnVu5lMThHOv9Ek&callback=initMap"></script>
 @endsection

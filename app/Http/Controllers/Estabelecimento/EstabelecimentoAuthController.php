@@ -29,6 +29,29 @@ class EstabelecimentoAuthController extends Controller
         return response()->json($estabelecimento);
     }
 
+    public function detalhes($id)
+    {
+        $estabelecimento = Estabelecimento::find($id); // Busca o estabelecimento no banco de dados
+        $endereco = Endereco::find($id);
+
+        if (!$estabelecimento) {
+            abort(404); // Se não encontrar, retorna erro 404
+        }
+
+        return view('estabelecimento.saibaMais', 
+        ['estabelecimento' => $estabelecimento, 
+        'nomeDoEstabelecimento' => $estabelecimento->name,
+        'descricao' => $estabelecimento->description,
+        'telefone' => $estabelecimento->telephone,
+        'email' => $estabelecimento->email,
+        'logradouro' => $endereco->logradouro,
+        'numero' => $endereco->numero,
+        'complemento' => $endereco->complemento,
+        'bairro' => $endereco->bairro,
+        'cidade' => $endereco->city,
+     ]);
+    }
+
     public function sendResetLinkEmail(Request $request)
     {
         $response = Password::broker('estabelecimentos')->sendResetLink(
@@ -113,6 +136,7 @@ class EstabelecimentoAuthController extends Controller
             'name' => $request->name,
             'cnpj' => $request->cnpj,
             'email' => $request->email,
+            'telephone' => $request->telephone,
             'password' => bcrypt($request->password),
             'description' => $request->description,
             'category' => $request->category,
@@ -170,6 +194,7 @@ class EstabelecimentoAuthController extends Controller
         // Atualize os campos de endereço no modelo do usuário
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->telephone = $request->telephone;
         $user->cnpj = $request->cnpj;
         $user->description = $request->description;
         $user->category = $request->category;
@@ -295,5 +320,10 @@ class EstabelecimentoAuthController extends Controller
             });
             return response()->json($estabelecimentosData);
         }
+    }
+
+    public function contato()
+    {
+        return view('contato');
     }
 }

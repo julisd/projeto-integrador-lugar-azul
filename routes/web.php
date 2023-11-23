@@ -44,6 +44,9 @@ Route::get('/obter-todos-estabelecimentos-ativos', [EstabelecimentoAuthControlle
 Route::get('/obter-categorias', [EstabelecimentoAuthController::class, 'getCategories'])->name('estabelecimento.getCategories');
 Route::get('/obter-estabelecimentos-por-categoria', [EstabelecimentoAuthController::class, 'getEstabelecimentosPorCategoria'])->name('estabelecimento.getEstabelecimentosPorCategoria');
 Route::get('/obter-dados-estabelecimento', [EstabelecimentoAuthController::class, 'obterDadosEstabelecimento']);
+Route::get('/detalhes-estabelecimento/{id}', [EstabelecimentoAuthController::class, 'detalhes'])->name('detalhes');
+Route::get('/contato', [EstabelecimentoAuthController::class, 'contato']);
+
 
 Route::prefix('pessoa')->group(function () {
     Route::get('login', [PessoaAuthController::class, 'showLoginForm'])->name('pessoa.login');
