@@ -31,26 +31,32 @@ class EstabelecimentoAuthController extends Controller
 
     public function detalhes($id)
     {
+        info('ID recebido:', ['id' => $id]);
+    
         $estabelecimento = Estabelecimento::find($id); // Busca o estabelecimento no banco de dados
         $endereco = Endereco::find($id);
-
+    
         if (!$estabelecimento) {
+            info('Estabelecimento não encontrado para o ID:', ['id' => $id]);
             abort(404); // Se não encontrar, retorna erro 404
         }
-
-        return view('estabelecimento.saibaMais', 
-        ['estabelecimento' => $estabelecimento, 
-        'nomeDoEstabelecimento' => $estabelecimento->name,
-        'descricao' => $estabelecimento->description,
-        'telefone' => $estabelecimento->telephone,
-        'email' => $estabelecimento->email,
-        'logradouro' => $endereco->logradouro,
-        'numero' => $endereco->numero,
-        'complemento' => $endereco->complemento,
-        'bairro' => $endereco->bairro,
-        'cidade' => $endereco->city,
-     ]);
+    
+        info('Estabelecimento encontrado:', ['estabelecimento' => $estabelecimento]);
+    
+        return view('estabelecimento.saibaMais', [
+            'estabelecimento' => $estabelecimento, 
+            'nomeDoEstabelecimento' => $estabelecimento->name,
+            'descricao' => $estabelecimento->description,
+            'telefone' => $estabelecimento->telephone,
+            'email' => $estabelecimento->email,
+            'logradouro' => $endereco->logradouro,
+            'numero' => $endereco->numero,
+            'complemento' => $endereco->complemento,
+            'bairro' => $endereco->bairro,
+            'cidade' => $endereco->city,
+        ]);
     }
+    
 
     public function sendResetLinkEmail(Request $request)
     {
