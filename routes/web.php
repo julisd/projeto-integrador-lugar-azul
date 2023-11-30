@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Estabelecimento\EstabelecimentoAuthController;
+use App\Http\Controllers\Estabelecimento\AvaliacaoController;
 use App\Http\Controllers\Pessoa\PessoaAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -36,6 +37,7 @@ Route::prefix('estabelecimento')->group(function () {
     Route::post('/excluir', [EstabelecimentoAuthController::class, 'excluirConta'])->name('excluirContaEst');
     Route::post('/excluirConta', [EstabelecimentoAuthController::class, 'excluirConta'])->name('excluirContaEstabelecimento');  
     Route::post('/logout', [EstabelecimentoAuthController::class, 'logout'])->name('estabelecimento.logout');
+    Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'show'])->name('estabelecimento.show');
 
 });
 
@@ -46,7 +48,8 @@ Route::get('/obter-estabelecimentos-por-categoria', [EstabelecimentoAuthControll
 Route::get('/obter-dados-estabelecimento', [EstabelecimentoAuthController::class, 'obterDadosEstabelecimento']);
 Route::get('/detalhes-estabelecimento/{id}', [EstabelecimentoAuthController::class, 'detalhes'])->name('detalhes');
 Route::get('/contato', [EstabelecimentoAuthController::class, 'contato']);
-
+Route::post('/avaliar-estabelecimento', [AvaliacaoController::class, 'criarAvaliacao'])->name('criarAvaliacao.estabelecimento');
+Route::get('/comentarios/{idDoEstabelecimento}', [AvaliacaoController::class, 'buscarComentarios']);
 
 Route::prefix('pessoa')->group(function () {
     Route::get('login', [PessoaAuthController::class, 'showLoginForm'])->name('pessoa.login');

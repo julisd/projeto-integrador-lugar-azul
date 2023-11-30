@@ -11,6 +11,8 @@ use App\Models\Estabelecimento;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Endereco;
+use App\Models\AvaliacaoComentario;
+
 
 class EstabelecimentoAuthController extends Controller
 {
@@ -331,5 +333,12 @@ class EstabelecimentoAuthController extends Controller
     public function contato()
     {
         return view('contato');
+    }
+
+    public function show($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        $comentarios = AvaliacaoComentario::where('estabelecimento_id', $estabelecimento->id)->with('usuario')->get();
+        return view('saibaMais', compact('estabelecimento', 'comentarios'));
     }
 }
