@@ -117,10 +117,16 @@
             margin-bottom: 15px;
             line-height: 1.6;
         }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
     </style>
 </head>
 
 <body>
+
     <!-- Barra de navegação -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container-fluid">
@@ -136,17 +142,27 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#avaliar">Avaliação</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contato">Contato</a>
+                    <!-- Adicionando a seção "Área do Cliente" na barra de navegação -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Área do Cliente
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/pessoa/home">Voltar ao Início</a></li>
+                            <li>
+                                <form action="{{ route('estabelecimento.logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Sair</button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#endereco">Endereço</a>
-                    </li>
-
                 </ul>
             </div>
         </div>
     </nav>
+
+
 
     <input type="hidden" id="idEstabelecimento" value="{{ $estabelecimento->id }}">
     <section id="sobre" class="section">
@@ -220,30 +236,39 @@
     </section>
 
 
-    <!-- Seção de Contato -->
-    <section id="contato" class="section">
+    <!-- Rodapé -->
+    <footer class="mt-5 py-3 text-center" style="background-color: #f8f9fa; color: #666; font-size: 0.9rem;">
         <div class="container">
-            <h1>Contato</h1>
-            <p class="contato-info">
-                <strong>Queremos estar mais perto de você!</strong><br>
-                <strong>Telefone:</strong> {{ $telefone }}<br>
-                <strong>Envie-nos uma mensagem:</strong> {{ $email }}
-            </p>
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Seção de Contato -->
+                    <h4>Contato</h4>
+                    <p class="contato-info">
+                        <strong>Telefone:</strong> {{ $telefone }}<br>
+                        <strong>Envie-nos uma mensagem:</strong> {{ $email }}
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <!-- Seção de Endereço -->
+                    <h4>Endereço</h4>
+                    <p class="endereco-info">
+                        <strong>Localização:</strong><br>
+                        {{ $logradouro }}, {{ $numero }}, {{ $complemento }}<br>
+                        {{ $bairro }}, {{ $cidade }}
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <!-- Seção de Horário de Funcionamento -->
+                    <h4>Horário de Funcionamento</h4>
+                    <p>
+                        @foreach($horariosEstabelecimento as $horario)
+                        <strong>{{ $horario->dia_semana }}:</strong> Das {{ date('H:i', strtotime($horario->abertura)) }} às {{ date('H:i', strtotime($horario->fechamento)) }}<br>
+                        @endforeach
+                    </p>
+                </div>
+            </div>
         </div>
-    </section>
-
-    <!-- Seção de Endereço -->
-    <section id="endereco" class="section">
-        <div class="container">
-            <h1>Endereço</h1>
-            <p class="endereco-info">
-                <strong>Estamos localizados no coração da cidade, um lugar onde a vida pulsa.</strong><br>
-                <strong>Venha nos visitar:</strong><br>
-                {{ $logradouro }}, {{ $numero }}, {{ $complemento }}<br>
-                {{ $bairro }}, {{ $cidade }}
-            </p>
-        </div>
-    </section>
+    </footer>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

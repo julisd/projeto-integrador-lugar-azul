@@ -189,6 +189,50 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="dias_semana" class="col-md-4 col-form-label text-md-end">{{ __('Dias da Semana') }}</label>
+                            <div class="col-md-6">
+                                <select id="dias_semana" class="form-control @error('dias_semana') is-invalid @enderror" name="dias_semana[]" multiple required>
+                                    <option value="Segunda-feira">Segunda-feira</option>
+                                    <option value="Terça-feira">Terça-feira</option>
+                                    <option value="Quarta-feira">Quarta-feira</option>
+                                    <option value="Quinta-feira">Quinta-feira</option>
+                                    <option value="Sexta-feira">Sexta-feira</option>
+                                    <option value="Sábado">Sábado</option>
+                                    <option value="Domingo">Domingo</option>
+                                </select>
+                                @error('dias_semana')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="abertura" class="col-md-4 col-form-label text-md-end">{{ __('Horário de Abertura') }}</label>
+                            <div class="col-md-6">
+                                <input id="abertura" type="time" class="form-control @error('abertura') is-invalid @enderror" name="abertura" required>
+                                @error('abertura')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="fechamento" class="col-md-4 col-form-label text-md-end">{{ __('Horário de Fechamento') }}</label>
+                            <div class="col-md-6">
+                                <input id="fechamento" type="time" class="form-control @error('fechamento') is-invalid @enderror" name="fechamento" required>
+                                @error('fechamento')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email') }}</label>
 
                             <div class="col-md-6">

@@ -50,6 +50,9 @@ Route::get('/detalhes-estabelecimento/{id}', [EstabelecimentoAuthController::cla
 Route::get('/contato', [EstabelecimentoAuthController::class, 'contato']);
 Route::post('/avaliar-estabelecimento', [AvaliacaoController::class, 'criarAvaliacao'])->name('criarAvaliacao.estabelecimento');
 Route::get('/comentarios/{idDoEstabelecimento}', [AvaliacaoController::class, 'buscarComentarios']);
+Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'horarioEstabelecimento'])->name('estabelecimento.horarioEstabelecimento');
+
+
 
 Route::prefix('pessoa')->group(function () {
     Route::get('login', [PessoaAuthController::class, 'showLoginForm'])->name('pessoa.login');

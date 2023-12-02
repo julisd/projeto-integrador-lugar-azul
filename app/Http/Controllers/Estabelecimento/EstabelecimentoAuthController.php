@@ -11,6 +11,7 @@ use App\Models\Estabelecimento;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Endereco;
+use App\Models\HorarioEstabelecimento;
 use App\Models\AvaliacaoComentario;
 
 
@@ -34,19 +35,20 @@ class EstabelecimentoAuthController extends Controller
     public function detalhes($id)
     {
         info('ID recebido:', ['id' => $id]);
-    
+
         $estabelecimento = Estabelecimento::find($id); // Busca o estabelecimento no banco de dados
         $endereco = Endereco::find($id);
-    
+        $horariosEstabelecimento = HorarioEstabelecimento::where('estabelecimento_id', $id)->get();
+
         if (!$estabelecimento) {
             info('Estabelecimento não encontrado para o ID:', ['id' => $id]);
             abort(404); // Se não encontrar, retorna erro 404
         }
-    
+
         info('Estabelecimento encontrado:', ['estabelecimento' => $estabelecimento]);
-    
+
         return view('estabelecimento.saibaMais', [
-            'estabelecimento' => $estabelecimento, 
+            'estabelecimento' => $estabelecimento,
             'nomeDoEstabelecimento' => $estabelecimento->name,
             'descricao' => $estabelecimento->description,
             'telefone' => $estabelecimento->telephone,
@@ -56,9 +58,11 @@ class EstabelecimentoAuthController extends Controller
             'complemento' => $endereco->complemento,
             'bairro' => $endereco->bairro,
             'cidade' => $endereco->city,
+            'horariosEstabelecimento' => $horariosEstabelecimento, // Passa a coleção completa para a view
+
         ]);
     }
-    
+
 
     public function sendResetLinkEmail(Request $request)
     {
@@ -134,6 +138,8 @@ class EstabelecimentoAuthController extends Controller
             'bairro' => 'required|string|max:255',
             'cidade' => 'required|string|max:255',
             'uf' => 'required|string|max:2',
+            'abertura' => 'required|date_format:H:i',
+            'fechamento' => 'required|date_format:H:i|after:abertura',
         ], $customMessages);
 
         if ($validator->fails()) {
@@ -163,8 +169,36 @@ class EstabelecimentoAuthController extends Controller
             'estabelecimento_id' => $estabelecimento->id, // Associe o endereço ao estabelecimento
         ]);
 
-        return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
+        if ($estabelecimento) {
+            // Iterar pelos dias selecionados e salvar os horários de funcionamento
+            foreach ($request->dias_semana as $dia) {
+                $estabelecimento->horarios()->create([
+                    'dia_semana' => $dia,
+                    'abertura' => $request->abertura,
+                    'fechamento' => $request->fechamento,
+                ]);
+            }
+
+            return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
+        } else {
+            return back()->withInput()->withErrors(['Falha ao criar estabelecimento']);
+        }
     }
+
+    public function horarioEstabelecimento($id)
+    {
+        // Supondo que você já tenha recuperado os detalhes do estabelecimento
+        $estabelecimento = Estabelecimento::find($id);
+
+        // Recuperar os horários de funcionamento do estabelecimento com ID correspondente
+        $horariosEstabelecimento = HorarioEstabelecimento::where('estabelecimento_id', $id)->get();
+
+        return view('estabelecimento.saibaMais', [
+            'estabelecimento' => $estabelecimento,
+            'horariosEstabelecimento' => $horariosEstabelecimento,
+        ]);
+    }
+
 
     public function home()
     {

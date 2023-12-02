@@ -3,48 +3,46 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
     /* Estilos personalizados */
-    .estabelecimento-card {
-        background-color: #f0f8ff;
-        /* Cor de fundo */
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        /* Sombra */
-        cursor: pointer;
-        /* Cursor ao passar por cima */
-    }
+.estabelecimento-card {
+    background-color: #f0f8ff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
 
-    .estabelecimento-name {
-        font-weight: bold;
-        font-size: 18px;
-        margin-bottom: 5px;
-    }
+.estabelecimento-name {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
 
-    .estabelecimento-category {
-        font-style: italic;
-        color: #007bff;
-        /* Cor do texto */
-    }
+.estabelecimento-category {
+    font-style: italic;
+    color: #007bff;
+}
+
+
 </style>
 @section('content')
-<div class="container-fluid">
-    <div class="row mb-3">
+<div class="container mt-4">
+    <div class="row">
         <div class="col-md-12">
-            <h1>Pesquisar Estabelecimentos</h1>
+            <h1 class="mb-4">Pesquisar Estabelecimentos</h1>
         </div>
     </div>
-    <div class="row mb-3">
+    <div class="row mb-4">
         <div class="col-md-6">
             <!-- Opções de pesquisa -->
-            <div class="form-group">
-                <label for="city">Cidade:</label>
+            <div class="mb-3">
+                <label for="city" class="form-label">Cidade:</label>
                 <input type="text" class="form-control" id="city" placeholder="Digite sua cidade">
             </div>
-            <div class="form-group">
-                <label for="category">Categoria:</label>
-                <select class="form-control" id="category">
-                    <option value="all">Tudo</option> <!-- Defina "Tudo" como a opção padrão -->
+            <div class="mb-3">
+                <label for="category" class="form-label">Categoria:</label>
+                <select class="form-select" id="category">
+                    <option value="all">Tudo</option>
                 </select>
             </div>
             <button class="btn btn-primary" onclick="searchPlaces()">Procurar</button>

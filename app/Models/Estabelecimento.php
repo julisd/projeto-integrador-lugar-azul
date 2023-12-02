@@ -25,5 +25,10 @@ class Estabelecimento extends Authenticatable  implements CanResetPassword
     {
         return $this->hasOne(Endereco::class, 'estabelecimento_id');
     }
+
+    public function horarios()
+    {
+        return $this->hasMany(HorarioEstabelecimento::class);
+    }
     
 }
