@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Endereco;
+
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Estabelecimento extends Authenticatable  implements CanResetPassword
@@ -15,7 +18,17 @@ class Estabelecimento extends Authenticatable  implements CanResetPassword
 
     protected $table = 'estabelecimentos';
     protected $fillable = [
-        'name', 'cnpj', 'email', 'password', 'description', 'category',
+        'name', 'cnpj', 'email', 'telephone', 'password', 'description', 'category', 'status'
     ];
    
+    public function endereco()
+    {
+        return $this->hasOne(Endereco::class, 'estabelecimento_id');
+    }
+
+    public function horarios()
+    {
+        return $this->hasMany(HorarioEstabelecimento::class);
+    }
+    
 }

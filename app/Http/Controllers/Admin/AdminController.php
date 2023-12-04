@@ -6,8 +6,10 @@ use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Estabelecimento;
+
+
 
 class AdminController extends Controller
 {
@@ -38,40 +40,40 @@ class AdminController extends Controller
         }
     }
 
-public function registerAdmin(Request $request)
-{
-    $existingAdminCount = Admin::count();
+    public function registerAdmin(Request $request)
+    {
+        $existingAdminCount = Admin::count();
 
-    if ($existingAdminCount > 0) {
-        // Já existe um administrador cadastrado, exibir mensagem
-        return redirect()->route('admin.register')->with('warning', 'Já existe um administrador cadastrado. Favor entrar em contato com julisd3@gmail.com.');
+        if ($existingAdminCount > 0) {
+            // Já existe um administrador cadastrado, exibir mensagem
+            return redirect()->route('admin.register')->with('warning', 'Já existe um administrador cadastrado. Favor entrar em contato com julisd3@gmail.com.');
+        }
+
+        // Validação dos dados de registro
+        $customMessages = [
+            'name.required' => 'O campo nome é obrigatório.',
+            'email.required' => 'O campo e-mail é obrigatório.',
+            'email.email' => 'Informe um endereço de e-mail válido.',
+            'email.unique' => 'Este e-mail já está sendo usado.',
+            'password.required' => 'O campo senha é obrigatório.',
+            'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
+            'password.confirmed' => 'As senhas não correspondem.',
+        ];
+
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:admin',
+            'password' => 'required|string|min:8|confirmed',
+        ], $customMessages);
+
+        $admin = Admin::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return redirect()->route('login')->with('success', 'Conta de administrador criada com sucesso! Faça o login.');
     }
-
-    // Validação dos dados de registro
-    $customMessages = [
-        'name.required' => 'O campo nome é obrigatório.',
-        'email.required' => 'O campo e-mail é obrigatório.',
-        'email.email' => 'Informe um endereço de e-mail válido.',
-        'email.unique' => 'Este e-mail já está sendo usado.',
-        'password.required' => 'O campo senha é obrigatório.',
-        'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
-        'password.confirmed' => 'As senhas não correspondem.',
-    ];
-
-    $this->validate($request, [
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|unique:admin',
-        'password' => 'required|string|min:8|confirmed',
-    ], $customMessages);
-
-    $admin = Admin::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-    ]);
-
-    return redirect()->route('login')->with('success', 'Conta de administrador criada com sucesso! Faça o login.');
-}
 
     public function showRegistrationForm()
     {
@@ -87,11 +89,45 @@ public function registerAdmin(Request $request)
     public function excluirConta(Request $request)
     {
         $user = Auth::guard('admin')->user();
-    
+
         Auth::guard('admin')->logout();
-    
+
         $user->delete();
-    
+
         return redirect('/');
+    }
+
+    public function detalhesEstabelecimento($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        return view('admin.detalhesEstabelecimento', compact('estabelecimento'));
+    }
+
+
+    public function verificarEstabelecimentos()
+    {
+        // Recupere uma lista de contas pendentes (status 'pendente') de estabelecimentos
+        $estabelecimentosPendentes = Estabelecimento::where('status', 'pendente')->with('endereco')->get();
+
+
+        return view('admin.verificarEstabelecimentos', compact('estabelecimentosPendentes'));
+    }
+
+    public function aprovarEstabelecimento($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        $estabelecimento->status = 'aprovado';
+        $estabelecimento->save();
+
+        return redirect()->route('admin.verificarEstabelecimentos')->with('success', 'Estabelecimento aprovado com sucesso.');
+    }
+
+    public function negarEstabelecimento($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        $estabelecimento->status = 'negado';
+        $estabelecimento->save();
+
+        return redirect()->route('admin.verificarEstabelecimentos')->with('success', 'Estabelecimento negado com sucesso.');
     }
 }

@@ -97,9 +97,10 @@
                         {{ Auth::guard('admin')->user()->name }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownAdmin">
-                        <!-- <a class="dropdown-item" href="{{ route('admin.editarConta') }}">
-                            {{ __('Editar Conta') }}
-                        </a> -->
+
+                        <a class="dropdown-item" href="{{ route('admin.verificarEstabelecimentos') }}">
+                            {{ __('Analise de Estabelecimentos') }}
+                        </a>
 
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#excluirContaModalAdmin">
                             {{ __('Excluir Conta') }}
@@ -108,6 +109,7 @@
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModalAdmin">
                             {{ __('Sair') }}
                         </a>
+
 
                         <form id="logout-form-admin" action="{{ route('admin.logout') }}" method="POST" class="d-none">
                             @csrf
