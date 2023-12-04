@@ -142,7 +142,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#avaliar">Avaliação</a>
                     </li>
-                    <!-- Adicionando a seção "Área do Cliente" na barra de navegação -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Área do Cliente
