@@ -39,9 +39,30 @@ class PessoaAuthController extends Controller
         }
     }
 
+    public function getAutismCharacteristics()
+    {
+
+        $characteristics = [
+            'Visual' => 'Visual',
+            'Comunicação' => 'Comunicação',
+            'Sensorial' => 'Sensorial',
+            'Mental' => 'Mental',
+            'Habilidades Sociais' => 'Habilidades Sociais',
+            'Hiperfoco' => 'Hiperfoco',
+            'Ansiedade' => 'Ansiedade',
+            'Estereotipias' => 'Estereotipias',
+            'Interesses Específicos' => 'Interesses Específicos',
+        ];
+
+
+        return $characteristics;
+    }
+
+
     public function showRegistrationForm()
     {
-        return view('auth.pessoa.register');
+        $characteristics = $this->getAutismCharacteristics();
+        return view('auth.pessoa.register', compact('characteristics'));
     }
 
     public function showLinkRequestForm()
@@ -51,26 +72,48 @@ class PessoaAuthController extends Controller
 
     public function editar()
     {
-        return view('pessoa.editar');
+        $characteristics = $this->getAutismCharacteristics();
+        return view('pessoa.editar', compact('characteristics'));
     }
 
     public function update(Request $request)
     {
         $user = Auth::user();
 
+        $customMessages = [
+            'name.required' => 'O campo nome é obrigatório.',
+            'email.required' => 'O campo e-mail é obrigatório.',
+            'email.email' => 'Informe um endereço de e-mail válido.',
+            'email.unique' => 'Este e-mail já está sendo usado.',
+            'birthdate.required' => 'O campo data de nascimento é obrigatório.',
+            'autism_characteristics.required' => 'Selecione pelo menos uma característica autista.',
+            'password.required' => 'O campo senha é obrigatório.',
+            'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
+            'password.confirmed' => 'As senhas não correspondem.',
+        ];
+        
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:pessoa_usuaria,email,' . $user->id,
             'birthdate' => 'required|date',
-        ]);
+            'autism_characteristics' => 'required|array', // Garante que pelo menos uma opção foi selecionada
+            'autism_characteristics.*' => 'in:Visual,Comunicação,Sensorial,Mental,Habilidades Sociais,Hiperfoco,Ansiedade,Estereotipias,Interesses Específicos',
+            'password' => 'nullable|string|min:8|confirmed',
+        ], $customMessages);
+        
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->birthdate = $request->birthdate;
+        $selectedCharacteristics = $request->input('autism_characteristics');
+
+        $user->autism_characteristics = $selectedCharacteristics;
         $user->save();
 
         return redirect()->route('pessoa.home')->with('success', 'Perfil atualizado com sucesso!');
     }
+
+
 
 
     public function register(Request $request)
@@ -91,22 +134,28 @@ class PessoaAuthController extends Controller
             'email' => 'required|string|email|unique:pessoa_usuaria',
             'password' => 'required|string|min:8|confirmed',
             'birthdate' => 'required|date',
-        ], $customMessages);
+            'autism_characteristics' => 'array', // Certifique-se de que é um array
+            'autism_characteristics.*' => 'in:Visual,Comunicação,Sensorial,Mental,Habilidades Sociais,Hiperfoco,Ansiedade,Estereotipias,Interesses Específicos',
+        ]);
+
+
+        $selectedCharacteristics = $request->input('autism_characteristics');
 
         PessoaUsuaria::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'birthdate' => $request->birthdate,
-
+            'autism_characteristics' => implode(',', $selectedCharacteristics), // Converte o array em uma string, ajuste conforme necessário
         ]);
+
 
         return redirect(route('pessoa.login'))->with('success', 'Conta criada com sucesso! Faça o login.');
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('pessoa_usuaria')->logout(); 
+        Auth::guard('pessoa_usuaria')->logout();
         return redirect('/');
     }
 
@@ -114,7 +163,7 @@ class PessoaAuthController extends Controller
     public function excluirConta(Request $request)
     {
         $user = Auth::guard('pessoa_usuaria')->user();
-    
+
         Auth::guard('pessoa_usuaria')->logout();
 
         $user->delete();

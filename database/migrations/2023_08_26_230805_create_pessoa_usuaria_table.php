@@ -14,6 +14,7 @@ class CreatePessoaUsuariaTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->date('birthdate');
+            $table->string('autism_characteristics')->nullable(); // Adiciona a coluna de características autistas, marcada como nullable
             $table->timestamps();
         });
     }

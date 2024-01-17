@@ -295,7 +295,6 @@
             });
         }
 
-
         // Função para obter os comentários do estabelecimento
         function obterComentariosEstabelecimento(id) {
             return fetch(`/comentarios/${id}`)
@@ -309,10 +308,6 @@
                     console.error('Erro ao buscar comentários:', error);
                 });
         }
-
-        // Evento de clique no botão "Ver Comentários"
-        const btnVerComentarios = document.getElementById('btnVerComentarios');
-        // ...
 
         document.addEventListener('DOMContentLoaded', () => {
             const idDoEstabelecimento = document.getElementById('idEstabelecimento').value;
@@ -336,7 +331,7 @@
 
                         const cardTitle = document.createElement('h5');
                         cardTitle.classList.add('card-title');
-                        cardTitle.innerText = `Comentário por Usuário ${comentario.usuario_id}`;
+                        cardTitle.innerText = `Comentário por ${comentario.usuario ? comentario.usuario.name : 'Anônimo'}`;
 
                         const rating = document.createElement('div');
                         rating.classList.add('rating');
@@ -353,7 +348,7 @@
 
                         const cardDate = document.createElement('p');
                         cardDate.classList.add('card-date');
-                        cardDate.innerText = `Data: ${comentario.created_at}`;
+                        cardDate.innerText = `Data: ${formatarData(comentario.created_at)}`;
 
                         cardBody.appendChild(cardTitle);
                         cardBody.appendChild(rating);
@@ -369,7 +364,14 @@
                 });
         });
 
-        // ...
+        function formatarData(data) {
+            const options = {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            };
+            return new Date(data).toLocaleDateString('pt-BR', options);
+        }
     </script>
 
 </body>

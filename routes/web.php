@@ -14,6 +14,7 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::prefix('estabelecimento')->group(function () {
+    Route::get('home', [EstabelecimentoAuthController::class, 'home'])->name('estabelecimento.home');
     Route::get('login', [EstabelecimentoAuthController::class, 'showLoginForm'])->name('estabelecimento.login');
     Route::post('login', [EstabelecimentoAuthController::class, 'login'])->middleware('guest:estabelecimento');
     Route::get('register', [EstabelecimentoAuthController::class, 'showRegistrationForm'])->name('estabelecimento.register');
@@ -75,6 +76,6 @@ Route::prefix('admin')->group(function () {
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('/verificarEstabelecimentos', [AdminController::class, 'verificarEstabelecimentos'])->name('admin.verificarEstabelecimentos')->middleware('auth:admin');
     Route::match(['get', 'post'], '/aprovarEstabelecimento/{id}', [AdminController::class, 'aprovarEstabelecimento'])->name('admin.aprovarEstabelecimento')->middleware('auth:admin');
-    Route::post('/negarEstabelecimento/{id}', [AdminController::class, 'negarEstabelecimento'])->name('admin.negarEstabelecimento');
+    Route::match(['get', 'post'], '/negarEstabelecimento/{id}', [AdminController::class, 'negarEstabelecimento'])->name('admin.negarEstabelecimento');
     Route::get('/estabelecimento/{id}', [AdminController::class, 'detalhesEstabelecimento'])->name('admin.detalhesEstabelecimento');
 });

@@ -1,30 +1,94 @@
 @extends('layout.app', ['current' => 'home'])
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
     /* Estilos personalizados */
-.estabelecimento-card {
-    background-color: #f0f8ff;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-}
+    body {
+        background-color: #f8f9fa;
+        /* Cor de fundo geral */
+    }
 
-.estabelecimento-name {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 5px;
-}
+    .container {
+        margin-top: 50px;
+    }
 
-.estabelecimento-category {
-    font-style: italic;
-    color: #007bff;
-}
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
 
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
 
+    .form-label {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #495057;
+        /* Cor do texto do rótulo */
+    }
+
+    .form-control,
+    .form-select {
+        height: 50px;
+        font-size: 1rem;
+        border: 2px solid #ced4da;
+        /* Cor da borda do campo de entrada */
+    }
+
+    .btn-primary {
+        font-size: 1.2rem;
+        padding: 12px 20px;
+        background-color: #007bff !important;
+        /* Cor de fundo do botão */
+        border: 1px solid #007bff !important;
+        /* Cor da borda do botão */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3 !important;
+        /* Cor de fundo do botão ao passar o mouse */
+        border: 1px solid #0056b3 !important;
+        /* Cor da borda do botão ao passar o mouse */
+    }
+
+    #map {
+        width: 100%;
+        height: 400px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .estabelecimento-card {
+        background-color: #fff;
+        /* Cor de fundo do cartão */
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .estabelecimento-card:hover {
+        transform: scale(1.05);
+    }
+
+    .estabelecimento-name {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+        color: #212529;
+        /* Cor do texto do nome do estabelecimento */
+    }
+
+    .estabelecimento-category {
+        font-style: italic;
+        color: #007bff;
+        font-size: 1rem;
+    }
 </style>
+
 @section('content')
 <div class="container mt-4">
     <div class="row">
@@ -33,28 +97,36 @@
         </div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-6">
+        <div class="col-md-4 col-lg-5">
             <!-- Opções de pesquisa -->
-            <div class="mb-3">
+            <div class="mb-3 mr-2">
                 <label for="city" class="form-label">Cidade:</label>
                 <input type="text" class="form-control" id="city" placeholder="Digite sua cidade">
             </div>
-            <div class="mb-3">
+        </div>
+        <div class="col-md-4 col-lg-5">
+            <div class="mb-3 mr-2">
                 <label for="category" class="form-label">Categoria:</label>
-                <select class="form-select" id="category">
+                <select class="form-select form-control" id="category">
                     <option value="all">Tudo</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="searchPlaces()">Procurar</button>
+        </div>
+        <div class="col-md-4 col-lg-2 d-flex" style="margin-top: 10px; align-items: center">
+            <div class="">
+                <!-- Botão de pesquisa -->
+                <label></label>
+                <button class="btn btn-primary btn-block" onclick="searchPlaces()">Procurar</button>
+            </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <!-- Mapa -->
-            <div id="map" style="height: 400px;"></div>
+            <div id="map"></div>
         </div>
-        <div class="col-md-6">
-            <h2>Lista de Estabelecimentos</h2>
+        <div class="col-md-4">
+            <h4>Lista de Estabelecimentos</h4>
             <div id="estabelecimentos-list"></div>
         </div>
     </div>
