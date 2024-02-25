@@ -71,6 +71,28 @@
                             </div>
                         </div>
 
+                        
+                        <div class="row mb-3">
+                            <label for="autism_characteristics" class="col-md-4 col-form-label text-md-end">{{ __('Características Adaptáveis para Atender às Necessidades e Preferências dos Autistas') }}</label>
+
+                            <div class="col-md-6">
+                                @foreach($characteristics as $key => $value)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="autism_characteristic_{{ $key }}" name="autism_characteristics[]" value="{{ $key }}">
+                                    <label class="form-check-label" for="autism_characteristic_{{ $key }}">
+                                        {{ $value }}
+                                    </label>
+                                </div>
+                                @endforeach
+
+                                @error('autism_characteristics')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="row mb-3">
                             <label for="cep" class="col-md-4 col-form-label text-md-end">{{ __('CEP') }}</label>
                             <div class="col-md-6">

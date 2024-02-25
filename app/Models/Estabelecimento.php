@@ -18,7 +18,7 @@ class Estabelecimento extends Authenticatable  implements CanResetPassword
 
     protected $table = 'estabelecimentos';
     protected $fillable = [
-        'name', 'cnpj', 'email', 'telephone', 'password', 'description', 'category', 'status'
+        'name', 'cnpj', 'email', 'telephone', 'password', 'description', 'category', 'status',  'autism_characteristics'
     ];
    
     public function endereco()

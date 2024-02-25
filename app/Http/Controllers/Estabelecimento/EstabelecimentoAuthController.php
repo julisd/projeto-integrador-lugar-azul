@@ -89,15 +89,35 @@ class EstabelecimentoAuthController extends Controller
         }
     }
 
+    public function getAutismCharacteristics()
+    {
+
+        $characteristics = [
+            'Visual' => 'Visual',
+            'Comunicação' => 'Comunicação',
+            'Sensorial' => 'Sensorial',
+            'Mental' => 'Mental',
+            'Habilidades Sociais' => 'Habilidades Sociais',
+            'Hiperfoco' => 'Hiperfoco',
+            'Ansiedade' => 'Ansiedade',
+            'Estereotipias' => 'Estereotipias',
+            'Interesses Específicos' => 'Interesses Específicos',
+        ];
+
+
+        return $characteristics;
+    }
+
+
+    public function showRegistrationForm()
+    {
+        $characteristics = $this->getAutismCharacteristics();
+        return view('auth.estabelecimento.register', compact('characteristics'));
+    }
 
     public function showLinkRequestForm()
     {
         return view('auth.estabelecimento.passwords.email');
-    }
-
-    public function showRegistrationForm()
-    {
-        return view('auth.estabelecimento.register');
     }
 
     public function register(Request $request)
@@ -140,11 +160,16 @@ class EstabelecimentoAuthController extends Controller
             'uf' => 'required|string|max:2',
             'abertura' => 'required|date_format:H:i',
             'fechamento' => 'required|date_format:H:i|after:abertura',
+            'autism_characteristics' => 'array', // Certifique-se de que é um array
+            'autism_characteristics.*' => 'in:Visual,Comunicação,Sensorial,Mental,Habilidades Sociais,Hiperfoco,Ansiedade,Estereotipias,Interesses Específicos',
         ], $customMessages);
+
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
+
+        $selectedCharacteristics = $request->input('autism_characteristics');
 
         $estabelecimento = Estabelecimento::create([
             'name' => $request->name,
@@ -155,6 +180,8 @@ class EstabelecimentoAuthController extends Controller
             'description' => $request->description,
             'category' => $request->category,
             'status' => 'pendente', // Defina o status como "pendente"
+            'autism_characteristics' => implode(',', $selectedCharacteristics), // Converte o array em uma string, ajuste conforme necessário
+
         ]);
 
         // Crie o endereço associando-o ao estabelecimento
@@ -208,9 +235,10 @@ class EstabelecimentoAuthController extends Controller
     public function editar()
     {
         $user = Auth::user();
+        $characteristics = $this->getAutismCharacteristics();
         $endereco = $user->endereco; // Obtém o endereço associado ao estabelecimento
 
-        return view('estabelecimento.editar', ['user' => $user, 'endereco' => $endereco]);
+        return view('estabelecimento.editar', ['user' => $user, 'endereco' => $endereco, 'characteristics' => $characteristics]);
     }
 
 
@@ -241,6 +269,9 @@ class EstabelecimentoAuthController extends Controller
         $user->description = $request->description;
         $user->category = $request->category;
         $user->status = 'pendente';
+        $selectedCharacteristics = $request->input('autism_characteristics');
+
+        $user->autism_characteristics = $selectedCharacteristics;
 
         // Verifique se o usuário já possui um endereço ou não
         if (!$user->endereco) {
@@ -341,14 +372,19 @@ class EstabelecimentoAuthController extends Controller
     {
         $category = $request->input('category');
         $city = $request->input('city');
-
+        $autismCharacteristics = $request->input('autism_characteristics');
+    
+        // Converta as características do autismo em uma string separada por vírgulas
+        $autismCharacteristicsString = implode(',', $autismCharacteristics);
+    
         $estabelecimentos = Estabelecimento::where('status', 'aprovado')
             ->where('category', $category)
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
             })
+            ->where('autism_characteristics', $autismCharacteristicsString) // Considerar características do autismo
             ->get();
-
+    
         if ($estabelecimentos->isEmpty()) {
             \Log::info('Nenhum estabelecimento ativo encontrado na categoria ' . $category . ' na cidade ' . $city);
             return response()->json([]);
@@ -363,6 +399,7 @@ class EstabelecimentoAuthController extends Controller
             return response()->json($estabelecimentosData);
         }
     }
+    
 
     public function contato()
     {

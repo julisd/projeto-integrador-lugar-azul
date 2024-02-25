@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('category');
             $table->string('status');
+            $table->string('autism_characteristics')->nullable(); // Adiciona a coluna de características autistas, marcada como nullable
             $table->timestamps();
         });
         
