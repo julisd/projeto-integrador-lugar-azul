@@ -133,9 +133,8 @@
 </div>
 <script>
     let map;
-    let estabelecimentosList = document.getElementById('estabelecimentos-list');
+    let estabelecimentosList;
     let infowindow;
-    let addedEstabelecimentos = [];
     let markers = [];
 
     function initMap() {
@@ -147,78 +146,61 @@
             center: blumenauCoords,
             zoom: 12
         });
+        estabelecimentosList = document.getElementById('estabelecimentos-list');
         infowindow = new google.maps.InfoWindow();
         getCategories();
     }
 
     function createMarker(location, title, id, map, content) {
         const marker = new google.maps.Marker({
-            map: map,
+            map,
             position: location,
-            title: title,
-            id: id
+            title,
+            id
         });
-
         const infowindow = new google.maps.InfoWindow({
-            content: content
+            content
         });
-
         marker.addListener('click', () => {
             infowindow.open(map, marker);
             loadEstabelecimentoInfo(id);
         });
-
         return marker;
     }
 
     function addEstabelecimentoToList(estabelecimento) {
         const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
-
         if (!address) {
             console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
             return;
         }
-
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({
-            address: address
+            address
         }, (results, status) => {
             if (status === 'OK') {
-                const marker = createMarker(
-                    results[0].geometry.location,
-                    estabelecimento.name,
-                    estabelecimento.endereco.id,
-                    map,
-                    `
+                const marker = createMarker(results[0].geometry.location, estabelecimento.name, estabelecimento.endereco.id, map, `
                     <div>
                         <strong>${estabelecimento.name}</strong><br>
                         Categoria: ${estabelecimento.category}<br>
                         Endereço: ${address}<br>
                         <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}" target="_blank">Saiba mais</a>
                     </div>
-                    `
-                );
-
+                `);
                 markers.push(marker);
-
                 const listItem = document.createElement('div');
                 listItem.classList.add('estabelecimento-card');
-
                 const name = document.createElement('div');
                 name.classList.add('estabelecimento-name');
                 name.textContent = estabelecimento.name;
-
                 const category = document.createElement('div');
                 category.classList.add('estabelecimento-category');
                 category.textContent = estabelecimento.category;
-
                 listItem.appendChild(name);
                 listItem.appendChild(category);
-
                 listItem.addEventListener('click', () => {
                     loadEstabelecimentoInfo(estabelecimento.endereco.id);
                 });
-
                 estabelecimentosList.appendChild(listItem);
             } else {
                 console.error('Erro ao geocodificar endereço:', status);
@@ -229,39 +211,28 @@
     function addAllMarkersAndList(city) {
         clearMarkers();
         estabelecimentosList.innerHTML = '';
-        addedEstabelecimentos = [];
-
+        markers = [];
         fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
             .then(response => response.json())
-            .then(data => {
-                const estabelecimentos = data;
-                estabelecimentos.forEach(estabelecimento => {
-                    addEstabelecimentoToList(estabelecimento);
-                });
-            })
-            .catch(error => {
-                console.error('Erro ao obter estabelecimentos ativos:', error);
-            });
+            .then(data => data.forEach(addEstabelecimentoToList))
+            .catch(error => console.error('Erro ao obter estabelecimentos ativos:', error));
     }
+
 
     function clearMarkers() {
         markers.forEach(marker => marker.setMap(null));
-        markers = [];
     }
 
     function getCategories() {
         fetch('/obter-categorias')
             .then(response => response.json())
-            .then(data => {
-                const categories = data;
+            .then(categories => {
                 const categoryDropdown = document.getElementById('category');
                 categoryDropdown.innerHTML = '';
-
                 const allOption = document.createElement('option');
                 allOption.value = 'all';
                 allOption.textContent = 'Tudo';
                 categoryDropdown.appendChild(allOption);
-
                 categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category;
@@ -269,39 +240,7 @@
                     categoryDropdown.appendChild(option);
                 });
             })
-            .catch(error => {
-                console.error('Erro ao obter categorias:', error);
-            });
-    }
-
-    function searchPlaces() {
-        clearMarkers();
-        estabelecimentosList.innerHTML = '';
-        addedEstabelecimentos = [];
-
-        const category = document.getElementById('category').value;
-        const city = document.getElementById('city').value.trim();
-
-        if (city === '') {
-            alert('Por favor, digite uma cidade.');
-            return;
-        }
-
-        if (category === 'all') {
-            addAllMarkersAndList(city);
-        } else {
-            fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}`)
-                .then(response => response.json())
-                .then(data => {
-                    const estabelecimentos = data;
-                    estabelecimentos.forEach(estabelecimento => {
-                        addEstabelecimentoToList(estabelecimento);
-                    });
-                })
-                .catch(error => {
-                    console.error('Erro ao obter estabelecimentos por categoria:', error);
-                });
-        }
+            .catch(error => console.error('Erro ao obter categorias:', error));
     }
 
     function loadEstabelecimentoInfo(id) {
@@ -332,6 +271,46 @@
         });
         infowindow.open(map);
     }
+
+    function searchPlaces() {
+        if (city === '') {
+            alert('Por favor, digite uma cidade.');
+            return;
+        }
+
+        if (category === 'all') {
+            addAllMarkersAndList(city);
+        } else {
+        // Faz uma solicitação para obter as características do usuário do backend
+        fetch('/obter-caracteristicas-usuario')
+            .then(response => response.json())
+            .then(data => {
+                // Extrai as características do usuário da resposta
+                const selectedCharacteristics = data.autism_characteristics;
+                // Obtém os valores de cidade e categoria do HTML
+                const city = document.getElementById('city').value;
+                const category = document.getElementById('category').value;
+
+                console.log('Características do usuário:', selectedCharacteristics);
+                console.log('Enviando solicitação para obter estabelecimentos por categoria:', {
+                    category: category,
+                    city: city,
+                    autism_characteristics: selectedCharacteristics
+                });
+
+                // Faz uma solicitação para obter os estabelecimentos por categoria, passando as características do usuário
+                return fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&autism_characteristics=${selectedCharacteristics}`);
+            })
+            .then(response => response.json())
+            .then(data => {
+                const estabelecimentos = data;
+                    estabelecimentos.forEach(estabelecimento => {
+                        addEstabelecimentoToList(estabelecimento);
+                    });           
+            })
+            .catch(error => console.error('Erro ao obter estabelecimentos:', error));
+    }
+}
 </script>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe5MaIMdFA_uVpuz59EnVu5lMThHOv9Ek&callback=initMap"></script>

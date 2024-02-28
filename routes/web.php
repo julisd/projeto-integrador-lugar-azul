@@ -28,7 +28,8 @@ Route::prefix('estabelecimento')->group(function () {
     Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'show'])->name('estabelecimento.show');
 });
 
-Route::post('/getEstabelecimentosPorCategoriaECaracteristicas', [EstabelecimentoAuthController::class, 'getEstabelecimentosPorCategoriaECaracteristicas']);
+// Rota para obter as características do usuário
+Route::get('/obter-caracteristicas-usuario', [EstabelecimentoAuthController::class, 'obterCaracteristicasUsuario'])->name('estabelecimento.obterCaracteristicasUsuario');
 Route::get('/obter-enderecos', [EstabelecimentoAuthController::class, 'getEnderecos'])->name('estabelecimento.getEnderecos');
 Route::get('/obter-todos-estabelecimentos-ativos', [EstabelecimentoAuthController::class, 'getAllActiveEstabelecimentos'])->name('estabelecimento.getAllActiveEstabelecimentos');
 Route::get('/obter-categorias', [EstabelecimentoAuthController::class, 'getCategories'])->name('estabelecimento.getCategories');

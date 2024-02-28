@@ -4,6 +4,7 @@ return [
 
     'defaults' => [],
 
+
     'guards' => [
         'pessoa_usuaria' => [
             'driver' => 'session',

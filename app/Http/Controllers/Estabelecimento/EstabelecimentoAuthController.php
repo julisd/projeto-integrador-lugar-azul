@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Endereco;
 use App\Models\HorarioEstabelecimento;
 use App\Models\AvaliacaoComentario;
-
+use App\Models\PessoaUsuaria;
 
 class EstabelecimentoAuthController extends Controller
 {
@@ -330,14 +330,6 @@ class EstabelecimentoAuthController extends Controller
         return redirect('/');
     }
 
-    public function getEnderecos()
-    {
-        // Recupere todos os endereços do banco de dados
-        $enderecos = Endereco::all();
-
-        return $enderecos;
-    }
-
     public function getAllActiveEstabelecimentos(Request $request)
     {
         $city = $request->input('city');
@@ -346,60 +338,82 @@ class EstabelecimentoAuthController extends Controller
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
             })
-            ->with('endereco') // Certifique-se de carregar os endereços relacionados
+            ->with('endereco')
             ->get();
-
-        if ($estabelecimentos->isEmpty()) {
-            \Log::info('Nenhum estabelecimento ativo encontrado na cidade: ' . $city);
-        } else {
-            foreach ($estabelecimentos as $estabelecimento) {
-                \Log::info('Estabelecimento encontrado: ' . $estabelecimento->name);
-            }
-        }
 
         return $estabelecimentos;
     }
 
-
     public function getCategories()
     {
         $categories = Estabelecimento::distinct('category')->pluck('category');
-        \Log::info('Categorias: ' . $categories);
         return response()->json($categories);
+    }
+
+
+    public function obterCaracteristicasUsuario(Request $request)
+    {
+
+        $userCharacteristics = $request->user('pessoa_usuaria')->autism_characteristics;
+
+        return response()->json(['autism_characteristics' => $userCharacteristics]);
     }
 
     public function getEstabelecimentosPorCategoria(Request $request)
     {
         $category = $request->input('category');
         $city = $request->input('city');
-        $autismCharacteristics = $request->input('autism_characteristics');
-    
-        // Converta as características do autismo em uma string separada por vírgulas
-        $autismCharacteristicsString = implode(',', $autismCharacteristics);
-    
+
+
+        // Busca as características do usuário no banco de dados
+        $userCharacteristicsString = $request->user('pessoa_usuaria')->autism_characteristics;
+
+        // Converte a string em um array separando-a por vírgulas
+        $userCharacteristics = explode(',', $userCharacteristicsString);
+
+        // Remove espaços em branco adicionais antes e depois de cada característica
+        $userCharacteristics = array_map('trim', $userCharacteristics);
+
+        // Remove elementos vazios do array
+        $userCharacteristics = array_filter($userCharacteristics);
+
+        // Adicionando log para visualizar as características do usuário
+        info('Características do usuário:', ['autism_characteristics' => $userCharacteristics]);
+
         $estabelecimentos = Estabelecimento::where('status', 'aprovado')
             ->where('category', $category)
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
-            })
-            ->where('autism_characteristics', $autismCharacteristicsString) // Considerar características do autismo
-            ->get();
-    
+            });
+
+        // Filtra os estabelecimentos que possuem as características do usuário
+        if (!empty($userCharacteristics)) {
+            $estabelecimentos->where(function ($query) use ($userCharacteristics) {
+                foreach ($userCharacteristics as $characteristic) {
+                    $query->where('autism_characteristics', 'LIKE', "%{$characteristic}%");
+                }
+            });
+        }
+
+        // Executa a consulta
+        $estabelecimentos = $estabelecimentos->get();
+
+        // Verifica se encontrou estabelecimentos
         if ($estabelecimentos->isEmpty()) {
-            \Log::info('Nenhum estabelecimento ativo encontrado na categoria ' . $category . ' na cidade ' . $city);
             return response()->json([]);
         } else {
+            // Transforma os dados dos estabelecimentos para o formato JSON
             $estabelecimentosData = $estabelecimentos->map(function ($estabelecimento) {
                 return [
                     'name' => $estabelecimento->name,
                     'category' => $estabelecimento->category,
-                    'endereco' => $estabelecimento->endereco // Certifique-se de que 'endereco' está corretamente relacionado ao modelo
+                    'endereco' => $estabelecimento->endereco
                 ];
             });
             return response()->json($estabelecimentosData);
         }
     }
-    
+
 
     public function contato()
     {
