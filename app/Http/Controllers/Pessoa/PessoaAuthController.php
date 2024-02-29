@@ -91,7 +91,7 @@ class PessoaAuthController extends Controller
             'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
             'password.confirmed' => 'As senhas não correspondem.',
         ];
-        
+
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:pessoa_usuaria,email,' . $user->id,
@@ -100,14 +100,14 @@ class PessoaAuthController extends Controller
             'autism_characteristics.*' => 'in:Visual,Comunicação,Sensorial,Mental,Habilidades Sociais,Hiperfoco,Ansiedade,Estereotipias,Interesses Específicos',
             'password' => 'nullable|string|min:8|confirmed',
         ], $customMessages);
-        
+
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->birthdate = $request->birthdate;
-        $selectedCharacteristics = $request->input('autism_characteristics');
 
-        $user->autism_characteristics = $selectedCharacteristics;
+        $selectedCharacteristics = implode(',', $request->input('autism_characteristics'));
+        $user->autism_characteristics = $selectedCharacteristics;;
         $user->save();
 
         return redirect()->route('pessoa.home')->with('success', 'Perfil atualizado com sucesso!');

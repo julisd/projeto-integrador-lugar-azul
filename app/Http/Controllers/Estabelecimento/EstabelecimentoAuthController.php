@@ -269,9 +269,10 @@ class EstabelecimentoAuthController extends Controller
         $user->description = $request->description;
         $user->category = $request->category;
         $user->status = 'pendente';
-        $selectedCharacteristics = $request->input('autism_characteristics');
 
+        $selectedCharacteristics = implode(',', $request->input('autism_characteristics'));
         $user->autism_characteristics = $selectedCharacteristics;
+
 
         // Verifique se o usuário já possui um endereço ou não
         if (!$user->endereco) {
@@ -332,17 +333,44 @@ class EstabelecimentoAuthController extends Controller
 
     public function getAllActiveEstabelecimentos(Request $request)
     {
+        // Obtém os parâmetros da solicitação
         $city = $request->input('city');
+        $category = $request->input('category');
+        $userCharacteristicsString = $request->user('pessoa_usuaria')->autism_characteristics;
 
+        // Converte a string em um array separando-a por vírgulas
+        $userCharacteristics = explode(',', $userCharacteristicsString);
+
+        // Remove espaços em branco adicionais antes e depois de cada característica
+        $userCharacteristics = array_map('trim', $userCharacteristics);
+
+        // Remove elementos vazios do array
+        $userCharacteristics = array_filter($userCharacteristics);
+
+        // Adicionando log para visualizar as características do usuário
+        info('Características do usuário:', ['autism_characteristics' => $userCharacteristics]);
+
+        // Inicializa a consulta
         $estabelecimentos = Estabelecimento::where('status', 'aprovado')
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
-            })
-            ->with('endereco')
-            ->get();
+            });
+
+        // Filtra os estabelecimentos que possuem as características do usuário
+        if (!empty($userCharacteristics)) {
+            $estabelecimentos->where(function ($query) use ($userCharacteristics) {
+                foreach ($userCharacteristics as $characteristic) {
+                    $query->orWhere('autism_characteristics', 'LIKE', "%{$characteristic}%");
+                }
+            });
+        }
+
+        // Executa a consulta
+        $estabelecimentos = $estabelecimentos->with('endereco')->get();
 
         return $estabelecimentos;
     }
+
 
     public function getCategories()
     {
@@ -390,7 +418,7 @@ class EstabelecimentoAuthController extends Controller
         if (!empty($userCharacteristics)) {
             $estabelecimentos->where(function ($query) use ($userCharacteristics) {
                 foreach ($userCharacteristics as $characteristic) {
-                    $query->where('autism_characteristics', 'LIKE', "%{$characteristic}%");
+                    $query->orWhere('autism_characteristics', 'LIKE', "%{$characteristic}%");
                 }
             });
         }

@@ -214,9 +214,14 @@
         markers = [];
         fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
             .then(response => response.json())
-            .then(data => data.forEach(addEstabelecimentoToList))
+            .then(data => {
+                data.forEach(estabelecimento => {
+                    addEstabelecimentoToList(estabelecimento);
+                });
+            })
             .catch(error => console.error('Erro ao obter estabelecimentos ativos:', error));
     }
+
 
 
     function clearMarkers() {
@@ -273,44 +278,57 @@
     }
 
     function searchPlaces() {
+        // Obtém os valores de cidade e categoria do HTML
+        const city = document.getElementById('city').value;
+        const category = document.getElementById('category').value;
+
+        console.log('Cidade selecionada:', city);
+        console.log('Categoria selecionada:', category);
+
         if (city === '') {
             alert('Por favor, digite uma cidade.');
             return;
         }
 
         if (category === 'all') {
+            console.log('Obtendo todos os estabelecimentos ativos...');
             addAllMarkersAndList(city);
         } else {
-        // Faz uma solicitação para obter as características do usuário do backend
-        fetch('/obter-caracteristicas-usuario')
-            .then(response => response.json())
-            .then(data => {
-                // Extrai as características do usuário da resposta
-                const selectedCharacteristics = data.autism_characteristics;
-                // Obtém os valores de cidade e categoria do HTML
-                const city = document.getElementById('city').value;
-                const category = document.getElementById('category').value;
+            console.log('Obtendo características do usuário...');
+            // Faz uma solicitação para obter as características do usuário do backend
+            fetch('/obter-caracteristicas-usuario')
+                .then(response => response.json())
+                .then(data => {
+                    // Extrai as características do usuário da resposta
+                    const selectedCharacteristics = data.autism_characteristics;
 
-                console.log('Características do usuário:', selectedCharacteristics);
-                console.log('Enviando solicitação para obter estabelecimentos por categoria:', {
-                    category: category,
-                    city: city,
-                    autism_characteristics: selectedCharacteristics
-                });
+                    console.log('Características do usuário:', selectedCharacteristics);
+                    console.log('Enviando solicitação para obter estabelecimentos por categoria:', {
+                        category: category,
+                        city: city,
+                        autism_characteristics: selectedCharacteristics
+                    });
 
-                // Faz uma solicitação para obter os estabelecimentos por categoria, passando as características do usuário
-                return fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&autism_characteristics=${selectedCharacteristics}`);
-            })
-            .then(response => response.json())
-            .then(data => {
-                const estabelecimentos = data;
+                    // Faz uma solicitação para obter os estabelecimentos por categoria, passando as características do usuário
+                    return fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&autism_characteristics=${selectedCharacteristics}`);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Resposta da solicitação de estabelecimentos:', data);
+
+                    // Limpa a lista de estabelecimentos antes de adicionar os novos estabelecimentos
+                    estabelecimentosList.innerHTML = '';
+                    markers = [];
+
+                    const estabelecimentos = data;
                     estabelecimentos.forEach(estabelecimento => {
                         addEstabelecimentoToList(estabelecimento);
-                    });           
-            })
-            .catch(error => console.error('Erro ao obter estabelecimentos:', error));
+                    });
+                })
+                .catch(error => console.error('Erro ao obter estabelecimentos:', error));
+        }
+
     }
-}
 </script>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe5MaIMdFA_uVpuz59EnVu5lMThHOv9Ek&callback=initMap"></script>
