@@ -169,6 +169,7 @@
     }
 
     function addEstabelecimentoToList(estabelecimento) {
+        clearMarkers();
         const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
         if (!address) {
             console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
@@ -278,6 +279,7 @@
     }
 
     function searchPlaces() {
+        clearMarkers();
         // Obtém os valores de cidade e categoria do HTML
         const city = document.getElementById('city').value;
         const category = document.getElementById('category').value;
@@ -291,6 +293,7 @@
         }
 
         if (category === 'all') {
+            clearMarkers();
             console.log('Obtendo todos os estabelecimentos ativos...');
             addAllMarkersAndList(city);
         } else {
