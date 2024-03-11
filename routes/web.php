@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
+Route::get('/offline', function () {
+    return view('modules/laravelpwa/offline');    
+});
 
 Route::get('/', function () {
     return view('welcome');
