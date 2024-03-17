@@ -123,19 +123,23 @@
     <div class="row">
         <div class="col-md-8">
             <!-- Mapa -->
-            <div id="map"></div>
+            <div id="map" style="height: 400px; border-radius: 8px; overflow: hidden;"></div>
         </div>
-        <div class="col-md-4">
-            <h4>Lista de Estabelecimentos</h4>
-            <div id="estabelecimentos-list"></div>
+        <div class="col-md-4 mt-4 mt-md-0">
+            <h4 class="mb-3">Lista de Estabelecimentos</h4>
+            <div id="estabelecimentos-list" class="row row-cols-1"></div>
         </div>
     </div>
+
 </div>
 <script>
     let map;
     let estabelecimentosList;
     let infowindow;
     let markers = [];
+    var imageBasePath = "{{ asset('uploads/') }}";
+
+
 
     function initMap() {
         const blumenauCoords = {
@@ -181,22 +185,29 @@
         }, (results, status) => {
             if (status === 'OK') {
                 const marker = createMarker(results[0].geometry.location, estabelecimento.name, estabelecimento.endereco.id, map, `
-                    <div>
-                        <strong>${estabelecimento.name}</strong><br>
-                        Categoria: ${estabelecimento.category}<br>
-                        Endereço: ${address}<br>
-                        <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}">Saiba mais</a>
-                    </div>
-                `);
+                <div>
+                    <strong>${estabelecimento.name}</strong><br>
+                    Categoria: ${estabelecimento.category}<br>
+                    Endereço: ${address}<br>
+                    <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}">Saiba mais</a>
+                </div>
+            `);
                 markers.push(marker);
                 const listItem = document.createElement('div');
                 listItem.classList.add('estabelecimento-card');
+                const image = document.createElement('img');
+                const imageSrc = imageBasePath + `/` + estabelecimento.image;
+                image.src = imageSrc;
+                image.alt = estabelecimento.name;
+                image.style.width = '70px';
+                image.style.height = '70px';
                 const name = document.createElement('div');
                 name.classList.add('estabelecimento-name');
                 name.textContent = estabelecimento.name;
                 const category = document.createElement('div');
                 category.classList.add('estabelecimento-category');
                 category.textContent = estabelecimento.category;
+                listItem.appendChild(image);
                 listItem.appendChild(name);
                 listItem.appendChild(category);
                 listItem.addEventListener('click', () => {
@@ -208,6 +219,7 @@
             }
         });
     }
+
 
     function addAllMarkersAndList(city) {
         clearMarkers();

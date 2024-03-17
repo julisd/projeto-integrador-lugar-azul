@@ -9,7 +9,7 @@
                 <div class="card-header">{{ __('Editar Cadastro') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('estabelecimento.atualizarConta') }}">
+                    <form method="POST" action="{{ route('estabelecimento.atualizarConta') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -52,6 +52,17 @@
                             </span>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <label for="image">Imagem</label>
+                            <input id="image" type="file" class="form-control-file @error('image') is-invalid @enderror" name="image" accept="image/*">
+                            @error('image')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+
 
                         <div class="form-group">
                             <label for="description">Descrição</label>

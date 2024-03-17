@@ -86,7 +86,11 @@
             margin-bottom: 20px;
             color: #007bff;
         }
+        .lugarzul{
+            color:#0056b3;
+            text-decoration-line: none;
 
+        }
         .info-box p {
             font-size: 1.1rem;
             color: #333;
@@ -191,6 +195,7 @@
             <a class="navbar-brand" href="#" id="logo">
                 <img src="../../../images/icons/logo.png" alt="Logo do Lugar Azul" class="logo">
             </a>
+            <a class="lugarazul"> Lugar Azul </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

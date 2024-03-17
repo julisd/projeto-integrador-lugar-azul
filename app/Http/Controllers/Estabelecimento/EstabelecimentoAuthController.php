@@ -253,72 +253,83 @@ class EstabelecimentoAuthController extends Controller
 
 
     public function update(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $this->validate($request, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
-            'cnpj' => 'required|string',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'cep' => 'required|string',
-            'logradouro' => 'required|string|max:255',
-            'numero' => 'required|string|max:10',
-            'complemento' => 'nullable|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'cidade' => 'required|string|max:255',
-            'uf' => 'required|string|max:2',
+    $this->validate($request, [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
+        'cnpj' => 'required|string',
+        'description' => 'required|string',
+        'category' => 'required|string',
+        'cep' => 'required|string',
+        'logradouro' => 'required|string|max:255',
+        'numero' => 'required|string|max:10',
+        'complemento' => 'nullable|string|max:255',
+        'bairro' => 'required|string|max:255',
+        'cidade' => 'required|string|max:255',
+        'uf' => 'required|string|max:2',
+    ]);
+
+    // Atualize os campos de endereço no modelo do usuário
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->telephone = $request->telephone;
+    $user->cnpj = $request->cnpj;
+    $user->description = $request->description;
+    $user->category = $request->category;
+    $user->status = 'pendente';
+
+    $selectedCharacteristics = implode(',', $request->input('autism_characteristics'));
+    $user->autism_characteristics = $selectedCharacteristics;
+
+    // Verificação e salvamento da imagem
+    if ($request->hasFile('image') && $request->file('image')->isValid()) {
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads'), $imageName); // Salva a imagem no diretório public/uploads
+
+        // Adicione o nome da nova imagem ao modelo do usuário
+        $user->image = $imageName;
+    }
+
+    // Verifique se o usuário já possui um endereço ou não
+    if (!$user->endereco) {
+        $user->endereco()->create([
+            'cep' => $request->cep,
+            'logradouro' => $request->logradouro,
+            'numero' => $request->numero,
+            'complemento' => $request->complemento,
+            'bairro' => $request->bairro,
+            'cidade' => $request->cidade,
+            'uf' => $request->uf,
         ]);
+    } else {
+        // Se o usuário já possui um endereço, atualize-o
+        $user->endereco->cep = $request->cep;
+        $user->endereco->logradouro = $request->logradouro;
+        $user->endereco->numero = $request->numero;
 
-        // Atualize os campos de endereço no modelo do usuário
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->telephone = $request->telephone;
-        $user->cnpj = $request->cnpj;
-        $user->description = $request->description;
-        $user->category = $request->category;
-        $user->status = 'pendente';
-
-        $selectedCharacteristics = implode(',', $request->input('autism_characteristics'));
-        $user->autism_characteristics = $selectedCharacteristics;
-
-
-        // Verifique se o usuário já possui um endereço ou não
-        if (!$user->endereco) {
-            $user->endereco()->create([
-                'cep' => $request->cep,
-                'logradouro' => $request->logradouro,
-                'numero' => $request->numero,
-                'complemento' => $request->complemento,
-                'bairro' => $request->bairro,
-                'cidade' => $request->cidade,
-                'uf' => $request->uf,
-            ]);
+        // Verificação e atualização do campo "complemento"
+        if ($request->has('complemento')) {
+            $user->endereco->complemento = $request->complemento;
         } else {
-            // Se o usuário já possui um endereço, atualize-o
-            $user->endereco->cep = $request->cep;
-            $user->endereco->logradouro = $request->logradouro;
-            $user->endereco->numero = $request->numero;
-
-            // Verificação e atualização do campo "complemento"
-            if ($request->has('complemento')) {
-                $user->endereco->complemento = $request->complemento;
-            } else {
-                $user->endereco->complemento = null; // Ou o valor padrão desejado
-            }
-
-            $user->endereco->bairro = $request->bairro;
-            $user->endereco->cidade = $request->cidade;
-            $user->endereco->uf = $request->uf;
-            $user->endereco->save();
+            $user->endereco->complemento = null; // Ou o valor padrão desejado
         }
 
-        // Salvar o modelo principal
-        $user->save();
-
-        return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
+        $user->endereco->bairro = $request->bairro;
+        $user->endereco->cidade = $request->cidade;
+        $user->endereco->uf = $request->uf;
+        $user->endereco->save();
     }
+
+    // Salvar o modelo principal
+    $user->save();
+
+    return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
+}
+
+    
 
 
 
