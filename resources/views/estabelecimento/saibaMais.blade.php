@@ -17,7 +17,7 @@
         }
 
         .navbar {
-            background-color: #007bff;
+            background-color: #fff;
             color: #fff;
         }
 
@@ -30,7 +30,7 @@
         .navbar-nav .nav-link {
             padding: 10px 20px;
             margin: 0 5px;
-            color: #fff;
+            color: #0056b3;
         }
 
         .navbar-nav .nav-link:hover {
@@ -39,7 +39,7 @@
         }
 
         .section {
-            min-height: 100vh;
+            min-height: 10vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -68,6 +68,46 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .info-box {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box i {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .info-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .info-box p {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 0;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 20px;
+        }
+
+        .info-box ul li {
+            margin-bottom: 10px;
+        }
+
+        .titulo-azul {
+            color: #007bff;
+            /* Cor azul */
+        }
+
         .comentario p {
             font-size: 1rem;
             color: #333;
@@ -79,6 +119,10 @@
             color: #666;
         }
 
+        .card{
+            --bs-card-bg: #7aafff
+        }
+
         .rating {
             display: flex;
             justify-content: center;
@@ -88,6 +132,13 @@
         .fa-star {
             cursor: pointer;
             transition: color 0.2s;
+        }
+
+        .logo-pequena {
+            width: 150px;
+            /* Ajuste o tamanho conforme necessário */
+            height: 150px;
+            /* Ajuste o tamanho conforme necessário */
         }
 
         .fa-star:hover,
@@ -122,6 +173,13 @@
             list-style: none;
             padding-left: 0;
         }
+
+        .logo {
+            width: 50px;
+            /* Ajuste o tamanho conforme necessário */
+            height: auto;
+            /* Manter a proporção da imagem */
+        }
     </style>
 </head>
 
@@ -130,32 +188,22 @@
     <!-- Barra de navegação -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#" id="nomeDoEstabelecimento">{{ $nomeDoEstabelecimento }}</a>
+            <a class="navbar-brand" href="#" id="logo">
+                <img src="../../../images/icons/logo.png" alt="Logo do Lugar Azul" class="logo">
+            </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#sobre">Sobre Nós</a>
+
+                    <li><a  href="/pessoa/home">Voltar ao Início</a></li>
+
+                    </form>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#avaliar">Avaliação</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Área do Cliente
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="/pessoa/home">Voltar ao Início</a></li>
-                            <li>
-                                <form action="{{ route('estabelecimento.logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">Sair</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                </ul>
+                </li>
                 </ul>
             </div>
         </div>
@@ -168,14 +216,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="mb-4">Sobre Nós</h1>
+                    <h1 class="mb-4">Sobre a Empresa</h1>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6 offset-lg-3">
                     <div class="card p-4">
                         <div class="card-body">
-                            <p class="card-text">{{ $descricao }}</p>
+                            <img src="{{ asset('uploads/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
+
+                            <div class="mb-4">
+                                <h2>{{ $nomeDoEstabelecimento }}</h2>
+                                <p class="lead">{{ $descricao }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,11 +267,7 @@
                         </form>
                     </div>
                 </div>
-                <div></div>
-                <div class="text-center mt-4"> <!-- Adicionei a classe "mt-4" para aplicar margem top -->
-                    <p>Confira as opiniões de quem já esteve aqui!</p>
-                    <a href="#verComentarios" class="btn btn-primary mt-4 ver-avaliacoes">Ver Avaliações <i class="fas fa-chevron-down"></i></a>
-                </div>
+                
 
             </div>
         </div>
@@ -234,41 +283,43 @@
         </div>
     </section>
 
-
-    <!-- Rodapé -->
-    <footer class="mt-5 py-3 text-center" style="background-color: #f8f9fa; color: #666; font-size: 0.9rem;">
+    <!-- Seção Informações da Empresa -->
+    <section id="informacoes-da-empresa" class="section">
         <div class="container">
+            <h1 class="titulo-azul mb-4">Informações da Empresa</h1>
             <div class="row">
                 <div class="col-md-4">
-                    <!-- Seção de Contato -->
-                    <h4>Contato</h4>
-                    <p class="contato-info">
-                        <strong>Telefone:</strong> {{ $telefone }}<br>
-                        <strong>Envie-nos uma mensagem:</strong> {{ $email }}
-                    </p>
+                    <div class="info-box">
+                        <i class="fas fa-phone-alt mb-4"></i>
+                        <h3>Contato</h3>
+                        <p class="contato-info">Telefone: {{ $telefone }}</p>
+                        <p>Envie-nos uma mensagem: {{ $email }}</p>
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <!-- Seção de Endereço -->
-                    <h4>Endereço</h4>
-                    <p class="endereco-info">
-                        <strong>Localização:</strong><br>
-                        {{ $logradouro }}, {{ $numero }}, {{ $complemento }}<br>
-                        {{ $bairro }}, {{ $cidade }}
-                    </p>
+                    <div class="info-box">
+                        <i class="fas fa-map-marker-alt mb-4"></i>
+                        <h3>Endereço</h3>
+                        <p class="endereco-info">Localização: {{ $logradouro }}, {{ $numero }}, {{ $complemento }}</p>
+                        <p>{{ $bairro }}, {{ $cidade }}</p>
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <!-- Seção de Horário de Funcionamento -->
-                    <h4>Horário de Funcionamento</h4>
-                    <p>
-                        @foreach($horariosEstabelecimento as $horario)
-                        <strong>{{ $horario->dia_semana }}:</strong> Das {{ date('H:i', strtotime($horario->abertura)) }} às {{ date('H:i', strtotime($horario->fechamento)) }}<br>
-                        @endforeach
-                    </p>
+                    <div class="info-box">
+                        <i class="fas fa-clock mb-4"></i>
+                        <h3>Horário de Funcionamento</h3>
+                        <ul>
+                            @foreach($horariosEstabelecimento as $horario)
+                            <li>{{ $horario->dia_semana }}: Das {{ date('H:i', strtotime($horario->abertura)) }} às
+                                {{ date('H:i', strtotime($horario->fechamento)) }}
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </footer>
-
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

@@ -185,7 +185,7 @@
                         <strong>${estabelecimento.name}</strong><br>
                         Categoria: ${estabelecimento.category}<br>
                         Endereço: ${address}<br>
-                        <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}" target="_blank">Saiba mais</a>
+                        <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}">Saiba mais</a>
                     </div>
                 `);
                 markers.push(marker);

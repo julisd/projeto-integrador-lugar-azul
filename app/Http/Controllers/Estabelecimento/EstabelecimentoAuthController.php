@@ -170,7 +170,6 @@ class EstabelecimentoAuthController extends Controller
         }
 
         $selectedCharacteristics = $request->input('autism_characteristics');
-
         $estabelecimento = Estabelecimento::create([
             'name' => $request->name,
             'cnpj' => $request->cnpj,
@@ -179,10 +178,21 @@ class EstabelecimentoAuthController extends Controller
             'password' => bcrypt($request->password),
             'description' => $request->description,
             'category' => $request->category,
-            'status' => 'pendente', // Defina o status como "pendente"
-            'autism_characteristics' => implode(',', $selectedCharacteristics), // Converte o array em uma string, ajuste conforme necessário
-
+            'status' => 'pendente',
+            'autism_characteristics' => implode(',', $selectedCharacteristics),
         ]);
+
+        // Verificação e salvamento da imagem
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads'), $imageName); // Salva a imagem no diretório public/uploads
+
+            // Adicione o nome da imagem ao modelo Estabelecimento
+            $estabelecimento->image = $imageName;
+            $estabelecimento->save(); // Salva o modelo com o nome da imagem
+        }
+
 
         // Crie o endereço associando-o ao estabelecimento
         $endereco = Endereco::create([
