@@ -76,6 +76,10 @@
                             {{ __('Editar Conta') }}
                         </a>
 
+                        <a class="dropdown-item" href="{{ route('estabelecimento.comentarios', ['id' => Auth::guard('estabelecimento')->user()->id]) }}">
+    {{ __('Comentários') }}
+</a>
+
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#excluirContaModalEstabelecimento">
                             {{ __('Excluir Conta') }}
                         </a>

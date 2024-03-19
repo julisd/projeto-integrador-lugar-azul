@@ -7,14 +7,12 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
-Route::get('/offline', function () {
-    return view('modules/laravelpwa/offline');    
-});
-
 Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/estabelecimento/{id}/comentarios', [AvaliacaoController::class, 'mostrarComentarios'])->name('estabelecimento.comentarios');
+Route::post('/responder-avaliacao', [AvaliacaoController::class, 'responderComentario'])->name('responderComentario');
 
 Route::prefix('estabelecimento')->group(function () {
     Route::get('home', [EstabelecimentoAuthController::class, 'home'])->name('estabelecimento.home');

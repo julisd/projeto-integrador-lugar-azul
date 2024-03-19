@@ -329,11 +329,6 @@ class EstabelecimentoAuthController extends Controller
     return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
 }
 
-    
-
-
-
-
     public function logout(Request $request)
     {
         Auth::guard('estabelecimento')->logout();
@@ -474,5 +469,13 @@ class EstabelecimentoAuthController extends Controller
         $estabelecimento = Estabelecimento::findOrFail($id);
         $comentarios = AvaliacaoComentario::where('estabelecimento_id', $estabelecimento->id)->with('usuario')->get();
         return view('saibaMais', compact('estabelecimento', 'comentarios'));
+    }
+    
+
+    public function mostrarComentarios($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        $comentarios = AvaliacaoComentario::where('estabelecimento_id', $estabelecimento->id)->with('usuario')->get();
+        return view('comentarios', compact('estabelecimento', 'comentarios'));
     }
 }
