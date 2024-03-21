@@ -25,26 +25,35 @@ class AvaliacaoController extends Controller
         $estabelecimento = Estabelecimento::find($id);
 
         // Buscando os comentários com o relacionamento do usuário carregado
-        $comentarios = AvaliacaoComentario::with('usuario')
+        $comentarios = AvaliacaoComentario::with(['usuario', 'respostas'])
             ->where('estabelecimento_id', $id)
             ->get();
-            
 
         $comentariosFormatados = [];
 
         foreach ($comentarios as $comentario) {
             $usuarioNome = $comentario->usuario ? $comentario->usuario->name : 'Anônimo';
 
+            $respostas = $comentario->respostas()->get(); // Recuperando as respostas
+
+            // Formatando as respostas
+            $respostasFormatadas = [];
+            foreach ($respostas as $resposta) {
+                $respostasFormatadas[] = [
+                    'texto' => $resposta->resposta,
+                    // Adicione outros campos da resposta, se necessário
+                ];
+            }
+
             $comentariosFormatados[] = [
                 'id' => $comentario->id,
                 'usuario_nome' => $usuarioNome,
                 'avaliacao' => $comentario->avaliacao,
                 'comentario' => $comentario->comentario,
-                'created_at' => \Carbon\Carbon::parse($comentario->created_at)->format('d/m/Y'),
+                'created_at' => $comentario->created_at->format('d/m/Y'),
+                'respostas' => $respostasFormatadas, // Associando as respostas ao comentário
             ];
         }
-
-      
 
         return view('estabelecimento.comentarios', [
             'nomeDoEstabelecimento' => $estabelecimento->name,
@@ -54,40 +63,41 @@ class AvaliacaoController extends Controller
             'telefone' => $estabelecimento->telephone,
             'email' => $estabelecimento->email,
             'comentarios' => $comentariosFormatados,
+            'respostas' => $respostasFormatadas,
         ]);
     }
-// Em AvaliacaoController.php
 
-public function responderComentario(Request $request)
-{
-    try {
-        Log::info('Resposta salva: bateu');
 
-        $validatedData = $request->validate([
-            'avaliacao_comentario_id' => 'required|exists:avaliacoes_comentarios,id',
-            'resposta' => 'required|string',
-        ]);
+    public function responderComentario(Request $request)
+    {
+        try {
+            Log::info('Resposta salva: bateu');
 
-        Log::info('Validação passou');
+            $validatedData = $request->validate([
+                'avaliacao_comentario_id' => 'required|exists:avaliacoes_comentarios,id',
+                'resposta' => 'required|string',
+            ]);
 
-        // Salvar a resposta ao comentário
-        $resposta = new AvaliacaoComentarioResposta();
-        $resposta->avaliacao_comentario_id = $validatedData['avaliacao_comentario_id'];
-        $resposta->resposta = $validatedData['resposta'];
-        $resposta->save();
+            Log::info('Validação passou');
 
-        Log::info('Resposta salva: ' . $validatedData['resposta']);
+            // Salvar a resposta ao comentário
+            $resposta = new AvaliacaoComentarioResposta();
+            $resposta->avaliacao_comentario_id = $validatedData['avaliacao_comentario_id'];
+            $resposta->resposta = $validatedData['resposta'];
+            $resposta->save();
 
-        // Redirecionar de volta à página de comentários
-        return redirect()->back()->with('success', 'Resposta enviada com sucesso!');
-    } catch (\Exception $e) {
-        // Log do erro
-        Log::error('Erro ao responder comentário: ' . $e->getMessage());
+            Log::info('Resposta salva: ' . $validatedData['resposta']);
 
-        // Redirecionar de volta com mensagem de erro
-        return redirect()->back()->with('error', 'Ocorreu um erro ao responder ao comentário. Por favor, tente novamente.');
+            // Retornar uma resposta JSON indicando sucesso
+            return response()->json(['success' => 'Resposta enviada com sucesso!']);
+        } catch (\Exception $e) {
+            // Log do erro
+            Log::error('Erro ao responder comentário: ' . $e->getMessage());
+
+            // Retornar uma resposta JSON indicando erro
+            return response()->json(['error' => 'Ocorreu um erro ao responder ao comentário. Por favor, tente novamente.'], 500);
+        }
     }
-}
 
 
 
@@ -99,7 +109,7 @@ public function responderComentario(Request $request)
             'comentario' => 'nullable|string',
             'estabelecimento_id' => 'required|exists:estabelecimentos,id'
         ]);
-        
+
         // Obtendo o ID do usuário pessoa_usuaria autenticado
         $usuarioId = auth('pessoa_usuaria')->id();
 
