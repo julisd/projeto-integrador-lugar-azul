@@ -41,7 +41,7 @@ class AvaliacaoController extends Controller
             foreach ($respostas as $resposta) {
                 $respostasFormatadas[] = [
                     'texto' => $resposta->resposta,
-                    // Adicione outros campos da resposta, se necessário
+                    'created_at' => $resposta->created_at->format('d/m/Y'),
                 ];
             }
 

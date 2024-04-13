@@ -100,67 +100,61 @@
             <a class="navbar-brand" href="#" id="logo">
                 <img src="../../../images/icons/logo.png" alt="Logo do Lugar Azul">
             </a>
-            <a class="lugarazul" href="#">Lugar Azul</a>
+            <a class="nav-link" href="/estabelecimento/home">Voltar ao Início</a>
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/estabelecimento/home">Voltar ao Início</a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
     <div id="listaComentarios">
-    @foreach($comentarios as $comentario)
-    <div class="card comentario" data-comentario-id="{{ $comentario['id'] }}">
-        <div class="card-body">
-            <h5 class="card-title">Comentário por {{ $comentario['usuario_nome'] }}</h5>
-            <div class="rating">
-                @for ($i = 0; $i < $comentario['avaliacao']; $i++)
-                    <i class="fas fa-star checked"></i>
-                @endfor
-            </div>
-            <p class="card-text">{{ $comentario['comentario'] }}</p>
-            <p class="card-date">Data: {{ $comentario['created_at'] }}</p>
+        @foreach($comentarios as $comentario)
+        <div class="card comentario" data-comentario-id="{{ $comentario['id'] }}">
+            <div class="card-body">
+                <h5 class="card-title">Comentário por {{ $comentario['usuario_nome'] }}</h5>
+                <div class="rating">
+                    @for ($i = 0; $i < $comentario['avaliacao']; $i++) <i class="fas fa-star checked"></i>
+                        @endfor
+                </div>
+                <p class="card-text">{{ $comentario['comentario'] }}</p>
+                <p class="card-date">Data: {{ $comentario['created_at'] }}</p>
 
-            <!-- Card de resposta -->
-            <div class="respostas-section">
-                @if(isset($comentario['respostas']))
-                @foreach($comentario['respostas'] as $resposta)
-                <div class="card resposta-card mt-3">
-                    <div class="card-body">
-                        <p class="card-text">{{ $resposta['texto'] }}</p>
+                <!-- Card de resposta -->
+                <div class="respostas-section">
+                    @if(isset($comentario['respostas']))
+                    @foreach($comentario['respostas'] as $resposta)
+                    <div class="card resposta-card mt-3">
+                        <div class="card-body">
+                            <p class="card-date"><b>Resposta do proprietário
+                                </b></p>
+                            <p class="card-date"><b>
+                                    Data: {{ $resposta['created_at'] }}</b></p>
+                            <p class="card-text" style="margin-left: 20px;">{{ $resposta['texto'] }}</p>
+
+
+                        </div>
                     </div>
+                    @endforeach
+                    @endif
                 </div>
-                @endforeach
-                @endif
+
+                <!-- Formulário para responder ao comentário -->
+                <form action="{{ route('responderComentario') }}" method="post" class="mt-3" onsubmit="submeterResposta(event);">
+                    @csrf
+                    <input type="hidden" name="avaliacao_comentario_id" value="{{ $comentario['id'] }}">
+                    <div class="form-group">
+                        <label for="resposta">Resposta:</label>
+                        <textarea name="resposta" id="resposta" class="form-control" rows="3" placeholder="Responda ao comentário"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Responder</button>
+                </form>
+
             </div>
-
-            <!-- Formulário para responder ao comentário -->
-            <form action="{{ route('responderComentario') }}" method="post" class="mt-3" onsubmit="submeterResposta(event);">
-                @csrf
-                <input type="hidden" name="avaliacao_comentario_id" value="{{ $comentario['id'] }}">
-                <div class="form-group">
-                    <label for="resposta">Resposta:</label>
-                    <textarea name="resposta" id="resposta" class="form-control" rows="3" placeholder="Responda ao comentário"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Responder</button>
-            </form>
-
         </div>
+        @endforeach
     </div>
-    @endforeach
-</div>
 
     </div>
 
 
     <script>
-        // Função para fazer a requisição AJAX para obter os comentários do servidor
         function obterComentariosEstabelecimento(id) {
             return fetch(`/estabelecimento/${id}/comentarios`)
                 .then(response => {
@@ -174,15 +168,7 @@
                 });
         }
 
-        // Função para formatar a data
-        function formatarData(data) {
-            const options = {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
-            };
-            return new Date(data).toLocaleDateString('pt-BR', options);
-        }
+    
 
         function renderizarComentarios(comentarios) {
             const listaComentarios = document.getElementById('listaComentarios');
@@ -197,9 +183,6 @@
                 const comentarioCard = document.createElement('div');
                 comentarioCard.classList.add('card', 'comentario');
 
-                // Renderizar conteúdo do comentário...
-
-                // Verificar se há respostas
                 if (comentario.resposta) {
                     const respostaCard = document.createElement('div');
                     respostaCard.classList.add('card', 'resposta');
@@ -240,14 +223,14 @@
                         // Limpa o campo de resposta após submissão
                         form.querySelector('textarea[name="resposta"]').value = '';
 
-                    // Atualiza a página após um breve intervalo de tempo
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao submeter resposta:', error);
-            });
+                        // Atualiza a página após um breve intervalo de tempo
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao submeter resposta:', error);
+                });
         }
     </script>

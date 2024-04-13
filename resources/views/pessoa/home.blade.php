@@ -1,190 +1,225 @@
 @extends('layout.app', ['current' => 'home'])
+<!DOCTYPE html>
+<html lang="pt-br">
 
-<style>
-    /* Estilos personalizados */
-    body {
-        background-color: #f8f9fa;
-        /* Cor de fundo geral */
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Estabelecimentos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
 
-    .container {
-        margin-top: 50px;
-    }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-    }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-    .mb-4 {
-        margin-bottom: 1.5rem !important;
-    }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-    .form-label {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        color: #495057;
-        /* Cor do texto do rótulo */
-    }
+        .btn-search {
+            width: 100%;
+        }
 
-    .form-control,
-    .form-select {
-        height: 50px;
-        font-size: 1rem;
-        border: 2px solid #ced4da;
-        /* Cor da borda do campo de entrada */
-    }
+        .btn-list,
+        .btn-map {
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            border-radius: 5px;
+        }
 
-    .btn-primary {
-        font-size: 1.2rem;
-        padding: 12px 20px;
-        background-color: #007bff !important;
-        /* Cor de fundo do botão */
-        border: 1px solid #007bff !important;
-        /* Cor da borda do botão */
-    }
+        .btn-list i,
+        .btn-map i {
+            margin-right: 5px;
+        }
 
-    .btn-primary:hover {
-        background-color: #0056b3 !important;
-        /* Cor de fundo do botão ao passar o mouse */
-        border: 1px solid #0056b3 !important;
-        /* Cor da borda do botão ao passar o mouse */
-    }
+        .btn-list span,
+        .btn-map span {
+            font-weight: bold;
+        }
 
-    #map {
-        width: 100%;
-        height: 400px;
-        border-radius: 8px;
-        overflow: hidden;
-    }
+        .map-container,
+        .list-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
 
-    .estabelecimento-card {
-        background-color: #fff;
-        /* Cor de fundo do cartão */
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: transform 0.3s ease-in-out;
-    }
+        .list-container {
+            padding: 20px;
+        }
 
-    .estabelecimento-card:hover {
-        transform: scale(1.05);
-    }
+        #map {
+            height: 300px;
+            /* Altura padrão do mapa */
+            border-radius: 8px;
+            overflow: hidden;
+        }
 
-    .estabelecimento-name {
-        font-weight: bold;
-        font-size: 1.2rem;
-        margin-bottom: 5px;
-        color: #212529;
-        /* Cor do texto do nome do estabelecimento */
-    }
+        #message-container {
+            display: none;
+            text-align: center;
+            /* Centraliza o conteúdo horizontalmente */
+            margin-top: 20px;
+            /* Espaçamento superior */
+        }
 
-    .estabelecimento-category {
-        font-style: italic;
-        color: #007bff;
-        font-size: 1rem;
-    }
-</style>
+        .message-box {
+            background-color: #f0f0f0;
+            /* Cor de fundo */
+            border-radius: 10px;
+            /* Borda arredondada */
+            padding: 20px;
+            /* Espaçamento interno */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* Sombra */
+        }
 
-@section('content')
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-12">
-            <h1 class="mb-4">Pesquisar Estabelecimentos</h1>
+        @media (min-width: 768px) {
+
+            .map-container,
+            .list-container {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    @section('content')
+    <div class="container">
+        <div class="header">
+            <h1>Pesquisar Estabelecimentos</h1>
         </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-4 col-lg-5">
-            <!-- Opções de pesquisa -->
-            <div class="mb-3 mr-2">
-                <label for="city" class="form-label">Cidade:</label>
+        <div class="form-container">
+            <div class="form-group">
+                <label for="city">Cidade:</label>
                 <input type="text" class="form-control" id="city" placeholder="Digite sua cidade">
             </div>
-        </div>
-        <div class="col-md-4 col-lg-5">
-            <div class="mb-3 mr-2">
-                <label for="category" class="form-label">Categoria:</label>
-                <select class="form-select form-control" id="category">
+            <div class="form-group">
+                <label for="category">Categoria:</label>
+                <select class="form-control" id="category">
                     <option value="all">Tudo</option>
                 </select>
             </div>
+            <button class="btn btn-primary btn-search" onclick="searchPlaces()">Procurar</button>
         </div>
-        <div class="col-md-4 col-lg-2 d-flex" style="margin-top: 10px; align-items: center">
-            <div class="">
-                <!-- Botão de pesquisa -->
-                <label></label>
-                <button class="btn btn-primary btn-block" onclick="searchPlaces()">Procurar</button>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <button class="btn btn-secondary btn-list active" onclick="toggleView('list')">
+                    <i class="fas fa-list"></i>
+                    <span>Ver Lista</span>
+                </button>
+                <button class="btn btn-secondary btn-map" onclick="toggleView('map')">
+                    <i class="fas fa-map"></i>
+                    <span>Ver Mapa</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div id="map"></div>
+                <div id="estabelecimentos-list" style="display:none;"></div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-8">
-            <!-- Mapa -->
-            <div id="map" style="height: 400px; border-radius: 8px; overflow: hidden;"></div>
-        </div>
-        <div class="col-md-4 mt-4 mt-md-0">
-            <h4 class="mb-3">Lista de Estabelecimentos</h4>
-            <div id="estabelecimentos-list" class="row row-cols-1"></div>
-        </div>
-    </div>
+    <script>
+        let map;
+        let estabelecimentosList;
+        let infowindow;
+        let markers = [];
+        var imageBasePath = "{{ asset('uploads/') }}";
 
-</div>
-<script>
-    let map;
-    let estabelecimentosList;
-    let infowindow;
-    let markers = [];
-    var imageBasePath = "{{ asset('uploads/') }}";
-
-
-
-    function initMap() {
-        const blumenauCoords = {
-            lat: -26.9196,
-            lng: -49.0650
-        };
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: blumenauCoords,
-            zoom: 12
-        });
-        estabelecimentosList = document.getElementById('estabelecimentos-list');
-        infowindow = new google.maps.InfoWindow();
-        getCategories();
-    }
-
-    function createMarker(location, title, id, map, content) {
-        const marker = new google.maps.Marker({
-            map,
-            position: location,
-            title,
-            id
-        });
-        const infowindow = new google.maps.InfoWindow({
-            content
-        });
-        marker.addListener('click', () => {
-            infowindow.open(map, marker);
-            loadEstabelecimentoInfo(id);
-        });
-        return marker;
-    }
-
-    function addEstabelecimentoToList(estabelecimento) {
-        clearMarkers();
-        const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
-        if (!address) {
-            console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
-            return;
+        function initMap() {
+            const blumenauCoords = {
+                lat: -26.9196,
+                lng: -49.0650
+            };
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: blumenauCoords,
+                zoom: 12
+            });
+            estabelecimentosList = document.getElementById('estabelecimentos-list');
+            infowindow = new google.maps.InfoWindow();
+            getCategories();
         }
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({
-            address
-        }, (results, status) => {
-            if (status === 'OK') {
-                const marker = createMarker(results[0].geometry.location, estabelecimento.name, estabelecimento.endereco.id, map, `
+
+        function createMarker(location, title, id, map, content) {
+            const marker = new google.maps.Marker({
+                map,
+                position: location,
+                title,
+                id
+            });
+            const infowindow = new google.maps.InfoWindow({
+                content
+            });
+            marker.addListener('click', () => {
+                infowindow.open(map, marker);
+                loadEstabelecimentoInfo(id);
+            });
+            return marker;
+        }
+
+        function toggleView(view) {
+            const mapContainer = document.getElementById('map');
+            const listContainer = document.getElementById('estabelecimentos-list');
+            const btnList = document.querySelector('.btn-list');
+            const btnMap = document.querySelector('.btn-map');
+
+            if (view === 'list') {
+                listContainer.style.display = 'block';
+                mapContainer.style.display = 'none';
+                btnList.classList.add('active');
+                btnMap.classList.remove('active');
+            } else if (view === 'map') {
+                mapContainer.style.display = 'block';
+                listContainer.style.display = 'none';
+                btnMap.classList.add('active');
+                btnList.classList.remove('active');
+            }
+        }
+
+
+        function addEstabelecimentoToList(estabelecimento) {
+            clearMarkers();
+            const address = `${estabelecimento.endereco.logradouro}, ${estabelecimento.endereco.numero}, ${estabelecimento.endereco.bairro}, ${estabelecimento.endereco.cidade}, ${estabelecimento.endereco.uf}`;
+            if (!address) {
+                console.error('Endereço não encontrado para o estabelecimento:', estabelecimento.name);
+                return;
+            }
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({
+                address
+            }, (results, status) => {
+                if (status === 'OK') {
+                    const position = results[0].geometry.location;
+
+                    // Adiciona marcador ao mapa
+                    const marker = createMarker(position, estabelecimento.name, estabelecimento.endereco.id, map, `
                 <div>
                     <strong>${estabelecimento.name}</strong><br>
                     Categoria: ${estabelecimento.category}<br>
@@ -192,159 +227,171 @@
                     <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}">Saiba mais</a>
                 </div>
             `);
-                markers.push(marker);
-                const listItem = document.createElement('div');
-                listItem.classList.add('estabelecimento-card');
-                const image = document.createElement('img');
-                const imageSrc = imageBasePath + `/` + estabelecimento.image;
-                image.src = imageSrc;
-                image.alt = estabelecimento.name;
-                image.style.width = '70px';
-                image.style.height = '70px';
-                const name = document.createElement('div');
-                name.classList.add('estabelecimento-name');
-                name.textContent = estabelecimento.name;
-                const category = document.createElement('div');
-                category.classList.add('estabelecimento-category');
-                category.textContent = estabelecimento.category;
-                listItem.appendChild(image);
-                listItem.appendChild(name);
-                listItem.appendChild(category);
-                listItem.addEventListener('click', () => {
-                    loadEstabelecimentoInfo(estabelecimento.endereco.id);
-                });
-                estabelecimentosList.appendChild(listItem);
-            } else {
-                console.error('Erro ao geocodificar endereço:', status);
-            }
-        });
-    }
+                    markers.push(marker);
 
+                    // Cria elemento na lista
+                    const listItem = document.createElement('div');
+                    listItem.classList.add('estabelecimento-card');
+                    const image = document.createElement('img');
+                    const imageSrc = imageBasePath + '/' + estabelecimento.image;
+                    image.src = imageSrc;
+                    image.alt = estabelecimento.name;
+                    image.style.width = '70px';
+                    image.style.height = '70px';
+                    const name = document.createElement('div');
+                    name.classList.add('estabelecimento-name');
+                    name.textContent = estabelecimento.name;
+                    const category = document.createElement('div');
+                    category.classList.add('estabelecimento-category');
+                    category.textContent = estabelecimento.category;
+                    const endereco = document.createElement('div');
+                    endereco.classList.add('estabelecimento-endereco');
+                    endereco.textContent = address;
+                    const saibaMaisLink = document.createElement('a');
+                    saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
+                    saibaMaisLink.textContent = 'Saiba mais';
 
-    function addAllMarkersAndList(city) {
-        clearMarkers();
-        estabelecimentosList.innerHTML = '';
-        markers = [];
-        fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(estabelecimento => {
-                    addEstabelecimentoToList(estabelecimento);
-                });
-            })
-            .catch(error => console.error('Erro ao obter estabelecimentos ativos:', error));
-    }
+                    listItem.appendChild(image);
+                    listItem.appendChild(name);
+                    listItem.appendChild(category);
+                    listItem.appendChild(endereco);
+                    listItem.appendChild(saibaMaisLink);
 
-
-
-    function clearMarkers() {
-        markers.forEach(marker => marker.setMap(null));
-    }
-
-    function getCategories() {
-        fetch('/obter-categorias')
-            .then(response => response.json())
-            .then(categories => {
-                const categoryDropdown = document.getElementById('category');
-                categoryDropdown.innerHTML = '';
-                const allOption = document.createElement('option');
-                allOption.value = 'all';
-                allOption.textContent = 'Tudo';
-                categoryDropdown.appendChild(allOption);
-                categories.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category;
-                    option.textContent = category;
-                    categoryDropdown.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Erro ao obter categorias:', error));
-    }
-
-    function loadEstabelecimentoInfo(id) {
-        console.log(`Carregando informações para o estabelecimento com ID ${id}...`);
-        fetch(`/obter-dados-estabelecimento?id=${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao obter os dados do estabelecimento');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Dados do estabelecimento obtidos:', data);
-                const estabelecimentoInfo = `Nome: ${data.name}, Descrição: ${data.description}, Endereço: ${data.endereco}`;
-                showEstabelecimentoInfo(estabelecimentoInfo);
-            })
-            .catch(error => {
-                console.error('Erro durante a solicitação do estabelecimento:', error);
-            });
-    }
-
-    function showEstabelecimentoInfo(info) {
-        if (infowindow) {
-            infowindow.close();
-        }
-        infowindow = new google.maps.InfoWindow({
-            content: info
-        });
-        infowindow.open(map);
-    }
-
-    function searchPlaces() {
-        clearMarkers();
-        // Obtém os valores de cidade e categoria do HTML
-        const city = document.getElementById('city').value;
-        const category = document.getElementById('category').value;
-
-        console.log('Cidade selecionada:', city);
-        console.log('Categoria selecionada:', category);
-
-        if (city === '') {
-            alert('Por favor, digite uma cidade.');
-            return;
-        }
-
-        if (category === 'all') {
-            clearMarkers();
-            console.log('Obtendo todos os estabelecimentos ativos...');
-            addAllMarkersAndList(city);
-        } else {
-            console.log('Obtendo características do usuário...');
-            // Faz uma solicitação para obter as características do usuário do backend
-            fetch('/obter-caracteristicas-usuario')
-                .then(response => response.json())
-                .then(data => {
-                    // Extrai as características do usuário da resposta
-                    const selectedCharacteristics = data.autism_characteristics;
-
-                    console.log('Características do usuário:', selectedCharacteristics);
-                    console.log('Enviando solicitação para obter estabelecimentos por categoria:', {
-                        category: category,
-                        city: city,
-                        autism_characteristics: selectedCharacteristics
+                    listItem.addEventListener('click', () => {
+                        loadEstabelecimentoInfo(estabelecimento.endereco.id);
                     });
 
-                    // Faz uma solicitação para obter os estabelecimentos por categoria, passando as características do usuário
-                    return fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&autism_characteristics=${selectedCharacteristics}`);
-                })
+                    estabelecimentosList.appendChild(listItem);
+                } else {
+                    console.error('Erro ao geocodificar endereço:', status);
+                }
+            });
+        }
+
+
+        function addAllMarkersAndList(city) {
+            clearMarkers();
+            estabelecimentosList.innerHTML = '';
+            markers = [];
+            fetch(`/obter-todos-estabelecimentos-ativos?city=${city}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Resposta da solicitação de estabelecimentos:', data);
-
-                    // Limpa a lista de estabelecimentos antes de adicionar os novos estabelecimentos
-                    estabelecimentosList.innerHTML = '';
-                    markers = [];
-
-                    const estabelecimentos = data;
-                    estabelecimentos.forEach(estabelecimento => {
+                    data.forEach(estabelecimento => {
                         addEstabelecimentoToList(estabelecimento);
                     });
                 })
-                .catch(error => console.error('Erro ao obter estabelecimentos:', error));
+                .catch(error => console.error('Erro ao obter estabelecimentos ativos:', error));
         }
 
-    }
-</script>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe5MaIMdFA_uVpuz59EnVu5lMThHOv9Ek&callback=initMap"></script>
-@endsection
+
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+        }
+
+        function getCategories() {
+            fetch('/obter-categorias')
+                .then(response => response.json())
+                .then(categories => {
+                    const categoryDropdown = document.getElementById('category');
+                    categoryDropdown.innerHTML = '';
+                    const allOption = document.createElement('option');
+                    allOption.value = 'all';
+                    allOption.textContent = 'Tudo';
+                    categoryDropdown.appendChild(allOption);
+                    categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category;
+                        option.textContent = category;
+                        categoryDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erro ao obter categorias:', error));
+        }
+
+        function loadEstabelecimentoInfo(id) {
+            console.log(`Carregando informações para o estabelecimento com ID ${id}...`);
+            fetch(`/obter-dados-estabelecimento?id=${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao obter os dados do estabelecimento');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Dados do estabelecimento obtidos:', data);
+                    const estabelecimentoInfo = `Nome: ${data.name}, Descrição: ${data.description}, Endereço: ${data.endereco}`;
+                    showEstabelecimentoInfo(estabelecimentoInfo);
+                })
+                .catch(error => {
+                    console.error('Erro durante a solicitação do estabelecimento:', error);
+                });
+        }
+
+        function showEstabelecimentoInfo(info) {
+            if (infowindow) {
+                infowindow.close();
+            }
+            infowindow = new google.maps.InfoWindow({
+                content: info
+            });
+            infowindow.open(map);
+        }
+
+        function searchPlaces() {
+            clearMarkers();
+            // Obtém os valores de cidade e categoria do HTML
+            const city = document.getElementById('city').value;
+            const category = document.getElementById('category').value;
+
+            console.log('Cidade selecionada:', city);
+            console.log('Categoria selecionada:', category);
+
+            if (city === '') {
+                alert('Por favor, digite uma cidade.');
+                return;
+            }
+
+            if (category === 'all') {
+                clearMarkers();
+                console.log('Obtendo todos os estabelecimentos ativos...');
+                addAllMarkersAndList(city);
+            } else {
+                console.log('Obtendo características do usuário...');
+                // Faz uma solicitação para obter as características do usuário do backend
+                fetch('/obter-caracteristicas-usuario')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Extrai as características do usuário da resposta
+                        const selectedCharacteristics = data.autism_characteristics;
+
+                        console.log('Características do usuário:', selectedCharacteristics);
+                        console.log('Enviando solicitação para obter estabelecimentos por categoria:', {
+                            category: category,
+                            city: city,
+                            autism_characteristics: selectedCharacteristics
+                        });
+
+                        // Faz uma solicitação para obter os estabelecimentos por categoria, passando as características do usuário
+                        return fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&autism_characteristics=${selectedCharacteristics}`);
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Resposta da solicitação de estabelecimentos:', data);
+
+                        estabelecimentosList.innerHTML = '';
+                        markers = [];
+
+                        const estabelecimentos = data;
+                        estabelecimentos.forEach(estabelecimento => {
+                            addEstabelecimentoToList(estabelecimento);
+                        });
+                    })
+                    .catch(error => console.error('Erro ao obter estabelecimentos:', error));
+            }
+
+        }
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe5MaIMdFA_uVpuz59EnVu5lMThHOv9Ek&callback=initMap"></script>
+    @endsection
