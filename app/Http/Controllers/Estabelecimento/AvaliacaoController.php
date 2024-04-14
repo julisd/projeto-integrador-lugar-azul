@@ -132,51 +132,88 @@ class AvaliacaoController extends Controller
 
     {
         // Buscar os comentários pelo ID do estabelecimento
-        $comentarios = AvaliacaoComentario::with('usuario')
-            ->where('estabelecimento_id', $idDoEstabelecimento)
-            ->get();
+        $comentarios = AvaliacaoComentario::with(['usuario', 'respostas'])
+                ->where('estabelecimento_id', $idDoEstabelecimento)
+                ->get();
 
+                $comentariosFormatados = [];
+    
+            foreach ($comentarios as $comentario) {
+                $usuarioNome = $comentario->usuario ? $comentario->usuario->name : 'Anônimo';
+    
+                $respostas = $comentario->respostas()->get(); // Recuperando as respostas
+    
+                // Formatando as respostas
+                $respostasFormatadas = [];
+                foreach ($respostas as $resposta) {
+                    $respostasFormatadas[] = [
+                        'texto' => $resposta->resposta,
+                        'created_at' => $resposta->created_at->format('d/m/Y'),
+                    ];
+                }
+    
+                $comentariosFormatados[] = [
+                    'id' => $comentario->id,
+                    'usuario_nome' => $usuarioNome,
+                    'avaliacao' => $comentario->avaliacao,
+                    'comentario' => $comentario->comentario,
+                    'created_at' => $comentario->created_at->format('d/m/Y'),
+                    'respostas' => $respostasFormatadas, // Associando as respostas ao comentário
+                ];
+            }
+    
         // Retornar os comentários (possivelmente em formato JSON, dependendo da necessidade)
-        return response()->json(['comentarios' => $comentarios]);
+        return response()->json(['comentarios' => $comentariosFormatados]);
     }
 
     public function show($id)
     {
-        // Buscando o estabelecimento e o endereço relacionados ao mesmo ID
-        $estabelecimento = Estabelecimento::find($id);
-        $endereco = Endereco::find($id);
-        // Buscando os comentários com o relacionamento do usuário carregado
-        $comentarios = AvaliacaoComentario::with('usuario')
-            ->where('estabelecimento_id', $id)
-            ->get();
 
-        dd($comentarios);
-
-        $comentariosFormatados = [];
-
-        foreach ($comentarios as $comentario) {
-            $usuarioNome = $comentario->usuario ? $comentario->usuario->name : 'Anônimo';
-
-            $comentariosFormatados[] = [
-                'usuario_nome' => $usuarioNome,
-                'avaliacao' => $comentario->avaliacao,
-                'comentario' => $comentario->comentario,
-                'created_at' => \Carbon\Carbon::parse($comentario->created_at)->format('d/m/Y'),
-            ];
-        }
-
-        return view('estabelecimento.saibaMais', [
-            'estabelecimento' => $estabelecimento,
-            'nomeDoEstabelecimento' => $estabelecimento->name,
-            'descricao' => $estabelecimento->description,
-            'telefone' => $estabelecimento->telephone,
-            'email' => $estabelecimento->email,
-            'logradouro' => $endereco->logradouro,
-            'numero' => $endereco->numero,
-            'complemento' => $endereco->complemento,
-            'bairro' => $endereco->bairro,
-            'cidade' => $endereco->city,
-            'comentarios' => $comentariosFormatados,
-        ]);
+            // Buscando o estabelecimento e o endereço relacionados ao mesmo ID
+            $estabelecimento = Estabelecimento::find($id);
+    
+            // Buscando os comentários com o relacionamento do usuário carregado
+            $comentarios = AvaliacaoComentario::with(['usuario', 'respostas'])
+                ->where('estabelecimento_id', $id)
+                ->get();
+    
+            $comentariosFormatados = [];
+    
+            foreach ($comentarios as $comentario) {
+                $usuarioNome = $comentario->usuario ? $comentario->usuario->name : 'Anônimo';
+    
+                $respostas = $comentario->respostas()->get(); // Recuperando as respostas
+    
+                // Formatando as respostas
+                $respostasFormatadas = [];
+                foreach ($respostas as $resposta) {
+                    $respostasFormatadas[] = [
+                        'texto' => $resposta->resposta,
+                        'created_at' => $resposta->created_at->format('d/m/Y'),
+                    ];
+                }
+    
+                $comentariosFormatados[] = [
+                    'id' => $comentario->id,
+                    'usuario_nome' => $usuarioNome,
+                    'avaliacao' => $comentario->avaliacao,
+                    'comentario' => $comentario->comentario,
+                    'created_at' => $comentario->created_at->format('d/m/Y'),
+                    'respostas' => $respostasFormatadas, // Associando as respostas ao comentário
+                ];
+            }
+    
+            return view('estabelecimento.saibaMais', [
+                'nomeDoEstabelecimento' => $estabelecimento->name,
+                'estabelecimento' => $estabelecimento,
+                'nomeDoEstabelecimento' => $estabelecimento->name,
+                'descricao' => $estabelecimento->description,
+                'telefone' => $estabelecimento->telephone,
+                'email' => $estabelecimento->email,
+                'comentarios' => $comentariosFormatados,
+                'respostas' => $respostasFormatadas,
+            ]);
+        
+    
     }
 }

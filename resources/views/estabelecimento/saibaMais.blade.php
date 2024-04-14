@@ -408,12 +408,13 @@
                     console.error('Erro ao buscar comentários:', error);
                 });
         }
-
         document.addEventListener('DOMContentLoaded', () => {
             const idDoEstabelecimento = document.getElementById('idEstabelecimento').value;
 
             obterComentariosEstabelecimento(idDoEstabelecimento)
                 .then(data => {
+                    console.log('Dados obtidos:', data);
+
                     const listaComentarios = document.getElementById('listaComentarios');
                     if (!listaComentarios) {
                         console.error('Elemento listaComentarios não encontrado.');
@@ -431,7 +432,7 @@
 
                         const cardTitle = document.createElement('h5');
                         cardTitle.classList.add('card-title');
-                        cardTitle.innerText = `Comentário por ${comentario.usuario ? comentario.usuario.name : 'Anônimo'}`;
+                        cardTitle.innerText = `Comentário por ${comentario.usuario_nome || 'Anônimo'}`;
 
                         const rating = document.createElement('div');
                         rating.classList.add('rating');
@@ -448,21 +449,48 @@
 
                         const cardDate = document.createElement('p');
                         cardDate.classList.add('card-date');
-                        cardDate.innerText = `Data: ${formatarData(comentario.created_at)}`;
+                        cardDate.innerText = `Data: ${comentario.created_at}`;
 
                         cardBody.appendChild(cardTitle);
                         cardBody.appendChild(rating);
                         cardBody.appendChild(cardText);
                         cardBody.appendChild(cardDate);
-                        comentarioCard.appendChild(cardBody);
 
+                        // Adicionando respostas, se houver
+                        if (comentario.respostas && comentario.respostas.length > 0) {
+                            const respostaTitulo = document.createElement('h6');
+                            respostaTitulo.innerText = 'Resposta do proprietário:';
+                            cardBody.appendChild(respostaTitulo);
+
+                            // Loop através das respostas
+                            comentario.respostas.forEach(resposta => {
+                                const respostaCard = document.createElement('div'); // Criando uma div para cada resposta
+                                respostaCard.classList.add('resposta', 'bg-white'); // Adicionando classe resposta e background branco
+
+                                const respostaText = document.createElement('p'); // Criando um parágrafo para o texto da resposta
+                                respostaText.innerText = resposta.texto; // Adicionando o texto da resposta
+                                respostaCard.appendChild(respostaText); // Adicionando o texto da resposta à div da resposta
+
+                                const respostaDate = document.createElement('p'); // Criando um parágrafo para a data da resposta
+                                respostaDate.innerText = `Data: ${resposta.created_at}`; // Adicionando a data da resposta
+                                respostaCard.appendChild(respostaDate); // Adicionando a data da resposta à div da resposta
+
+                                cardBody.appendChild(respostaCard); // Adicionando a div da resposta ao corpo do comentário
+                            });
+                        }
+
+                        comentarioCard.appendChild(cardBody);
                         listaComentarios.appendChild(comentarioCard);
                     });
+
+
                 })
                 .catch(error => {
                     console.error('Erro ao obter os comentários:', error);
                 });
         });
+
+
 
         function formatarData(data) {
             const options = {
