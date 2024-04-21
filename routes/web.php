@@ -7,13 +7,15 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
-
 Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/estabelecimento/{id}/comentarios', [AvaliacaoController::class, 'mostrarComentarios'])->name('estabelecimento.comentarios');
+Route::post('/responder-avaliacao', [AvaliacaoController::class, 'responderComentario'])->name('responderComentario');
 
 Route::prefix('estabelecimento')->group(function () {
+    Route::get('home', [EstabelecimentoAuthController::class, 'home'])->name('estabelecimento.home');
     Route::get('login', [EstabelecimentoAuthController::class, 'showLoginForm'])->name('estabelecimento.login');
     Route::post('login', [EstabelecimentoAuthController::class, 'login'])->middleware('guest:estabelecimento');
     Route::get('register', [EstabelecimentoAuthController::class, 'showRegistrationForm'])->name('estabelecimento.register');
@@ -26,6 +28,9 @@ Route::prefix('estabelecimento')->group(function () {
     Route::post('/logout', [EstabelecimentoAuthController::class, 'logout'])->name('estabelecimento.logout');
     Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'show'])->name('estabelecimento.show');
 });
+
+// Rota para obter as características do usuário
+Route::get('/obter-caracteristicas-usuario', [EstabelecimentoAuthController::class, 'obterCaracteristicasUsuario'])->name('estabelecimento.obterCaracteristicasUsuario');
 Route::get('/obter-enderecos', [EstabelecimentoAuthController::class, 'getEnderecos'])->name('estabelecimento.getEnderecos');
 Route::get('/obter-todos-estabelecimentos-ativos', [EstabelecimentoAuthController::class, 'getAllActiveEstabelecimentos'])->name('estabelecimento.getAllActiveEstabelecimentos');
 Route::get('/obter-categorias', [EstabelecimentoAuthController::class, 'getCategories'])->name('estabelecimento.getCategories');
@@ -75,6 +80,6 @@ Route::prefix('admin')->group(function () {
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('/verificarEstabelecimentos', [AdminController::class, 'verificarEstabelecimentos'])->name('admin.verificarEstabelecimentos')->middleware('auth:admin');
     Route::match(['get', 'post'], '/aprovarEstabelecimento/{id}', [AdminController::class, 'aprovarEstabelecimento'])->name('admin.aprovarEstabelecimento')->middleware('auth:admin');
-    Route::post('/negarEstabelecimento/{id}', [AdminController::class, 'negarEstabelecimento'])->name('admin.negarEstabelecimento');
+    Route::match(['get', 'post'], '/negarEstabelecimento/{id}', [AdminController::class, 'negarEstabelecimento'])->name('admin.negarEstabelecimento');
     Route::get('/estabelecimento/{id}', [AdminController::class, 'detalhesEstabelecimento'])->name('admin.detalhesEstabelecimento');
 });

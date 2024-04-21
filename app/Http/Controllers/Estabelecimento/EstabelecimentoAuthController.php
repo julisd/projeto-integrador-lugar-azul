@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Endereco;
 use App\Models\HorarioEstabelecimento;
 use App\Models\AvaliacaoComentario;
-
+use App\Models\PessoaUsuaria;
 
 class EstabelecimentoAuthController extends Controller
 {
@@ -89,15 +89,35 @@ class EstabelecimentoAuthController extends Controller
         }
     }
 
+    public function getAutismCharacteristics()
+    {
+
+        $characteristics = [
+            'Visual' => 'Visual',
+            'Comunicação' => 'Comunicação',
+            'Sensorial' => 'Sensorial',
+            'Mental' => 'Mental',
+            'Habilidades Sociais' => 'Habilidades Sociais',
+            'Hiperfoco' => 'Hiperfoco',
+            'Ansiedade' => 'Ansiedade',
+            'Estereotipias' => 'Estereotipias',
+            'Interesses Específicos' => 'Interesses Específicos',
+        ];
+
+
+        return $characteristics;
+    }
+
+
+    public function showRegistrationForm()
+    {
+        $characteristics = $this->getAutismCharacteristics();
+        return view('auth.estabelecimento.register', compact('characteristics'));
+    }
 
     public function showLinkRequestForm()
     {
         return view('auth.estabelecimento.passwords.email');
-    }
-
-    public function showRegistrationForm()
-    {
-        return view('auth.estabelecimento.register');
     }
 
     public function register(Request $request)
@@ -140,12 +160,16 @@ class EstabelecimentoAuthController extends Controller
             'uf' => 'required|string|max:2',
             'abertura' => 'required|date_format:H:i',
             'fechamento' => 'required|date_format:H:i|after:abertura',
+            'autism_characteristics' => 'array', // Certifique-se de que é um array
+            'autism_characteristics.*' => 'in:Visual,Comunicação,Sensorial,Mental,Habilidades Sociais,Hiperfoco,Ansiedade,Estereotipias,Interesses Específicos',
         ], $customMessages);
+
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
+        $selectedCharacteristics = $request->input('autism_characteristics');
         $estabelecimento = Estabelecimento::create([
             'name' => $request->name,
             'cnpj' => $request->cnpj,
@@ -154,8 +178,21 @@ class EstabelecimentoAuthController extends Controller
             'password' => bcrypt($request->password),
             'description' => $request->description,
             'category' => $request->category,
-            'status' => 'pendente', // Defina o status como "pendente"
+            'status' => 'pendente',
+            'autism_characteristics' => implode(',', $selectedCharacteristics),
         ]);
+
+        // Verificação e salvamento da imagem
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads'), $imageName); // Salva a imagem no diretório public/uploads
+
+            // Adicione o nome da imagem ao modelo Estabelecimento
+            $estabelecimento->image = $imageName;
+            $estabelecimento->save(); // Salva o modelo com o nome da imagem
+        }
+
 
         // Crie o endereço associando-o ao estabelecimento
         $endereco = Endereco::create([
@@ -208,78 +245,89 @@ class EstabelecimentoAuthController extends Controller
     public function editar()
     {
         $user = Auth::user();
+        $characteristics = $this->getAutismCharacteristics();
         $endereco = $user->endereco; // Obtém o endereço associado ao estabelecimento
 
-        return view('estabelecimento.editar', ['user' => $user, 'endereco' => $endereco]);
+        return view('estabelecimento.editar', ['user' => $user, 'endereco' => $endereco, 'characteristics' => $characteristics]);
     }
 
 
     public function update(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $this->validate($request, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
-            'cnpj' => 'required|string',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'cep' => 'required|string',
-            'logradouro' => 'required|string|max:255',
-            'numero' => 'required|string|max:10',
-            'complemento' => 'nullable|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'cidade' => 'required|string|max:255',
-            'uf' => 'required|string|max:2',
-        ]);
+    $this->validate($request, [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|unique:estabelecimentos,email,' . $user->id,
+        'cnpj' => 'required|string',
+        'description' => 'required|string',
+        'category' => 'required|string',
+        'cep' => 'required|string',
+        'logradouro' => 'required|string|max:255',
+        'numero' => 'required|string|max:10',
+        'complemento' => 'nullable|string|max:255',
+        'bairro' => 'required|string|max:255',
+        'cidade' => 'required|string|max:255',
+        'uf' => 'required|string|max:2',
+    ]);
 
-        // Atualize os campos de endereço no modelo do usuário
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->telephone = $request->telephone;
-        $user->cnpj = $request->cnpj;
-        $user->description = $request->description;
-        $user->category = $request->category;
-        $user->status = 'pendente';
+    // Atualize os campos de endereço no modelo do usuário
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->telephone = $request->telephone;
+    $user->cnpj = $request->cnpj;
+    $user->description = $request->description;
+    $user->category = $request->category;
+    $user->status = 'pendente';
 
-        // Verifique se o usuário já possui um endereço ou não
-        if (!$user->endereco) {
-            $user->endereco()->create([
-                'cep' => $request->cep,
-                'logradouro' => $request->logradouro,
-                'numero' => $request->numero,
-                'complemento' => $request->complemento,
-                'bairro' => $request->bairro,
-                'cidade' => $request->cidade,
-                'uf' => $request->uf,
-            ]);
-        } else {
-            // Se o usuário já possui um endereço, atualize-o
-            $user->endereco->cep = $request->cep;
-            $user->endereco->logradouro = $request->logradouro;
-            $user->endereco->numero = $request->numero;
+    $selectedCharacteristics = implode(',', $request->input('autism_characteristics'));
+    $user->autism_characteristics = $selectedCharacteristics;
 
-            // Verificação e atualização do campo "complemento"
-            if ($request->has('complemento')) {
-                $user->endereco->complemento = $request->complemento;
-            } else {
-                $user->endereco->complemento = null; // Ou o valor padrão desejado
-            }
+    // Verificação e salvamento da imagem
+    if ($request->hasFile('image') && $request->file('image')->isValid()) {
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads'), $imageName); // Salva a imagem no diretório public/uploads
 
-            $user->endereco->bairro = $request->bairro;
-            $user->endereco->cidade = $request->cidade;
-            $user->endereco->uf = $request->uf;
-            $user->endereco->save();
-        }
-
-        // Salvar o modelo principal
-        $user->save();
-
-        return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
+        // Adicione o nome da nova imagem ao modelo do usuário
+        $user->image = $imageName;
     }
 
+    // Verifique se o usuário já possui um endereço ou não
+    if (!$user->endereco) {
+        $user->endereco()->create([
+            'cep' => $request->cep,
+            'logradouro' => $request->logradouro,
+            'numero' => $request->numero,
+            'complemento' => $request->complemento,
+            'bairro' => $request->bairro,
+            'cidade' => $request->cidade,
+            'uf' => $request->uf,
+        ]);
+    } else {
+        // Se o usuário já possui um endereço, atualize-o
+        $user->endereco->cep = $request->cep;
+        $user->endereco->logradouro = $request->logradouro;
+        $user->endereco->numero = $request->numero;
 
+        // Verificação e atualização do campo "complemento"
+        if ($request->has('complemento')) {
+            $user->endereco->complemento = $request->complemento;
+        } else {
+            $user->endereco->complemento = null; // Ou o valor padrão desejado
+        }
 
+        $user->endereco->bairro = $request->bairro;
+        $user->endereco->cidade = $request->cidade;
+        $user->endereco->uf = $request->uf;
+        $user->endereco->save();
+    }
+
+    // Salvar o modelo principal
+    $user->save();
+
+    return redirect()->route('estabelecimento.home')->with('success', 'Perfil atualizado com sucesso!');
+}
 
     public function logout(Request $request)
     {
@@ -299,32 +347,42 @@ class EstabelecimentoAuthController extends Controller
         return redirect('/');
     }
 
-    public function getEnderecos()
-    {
-        // Recupere todos os endereços do banco de dados
-        $enderecos = Endereco::all();
-
-        return $enderecos;
-    }
-
     public function getAllActiveEstabelecimentos(Request $request)
     {
+        // Obtém os parâmetros da solicitação
         $city = $request->input('city');
+        $category = $request->input('category');
+        $userCharacteristicsString = $request->user('pessoa_usuaria')->autism_characteristics;
 
+        // Converte a string em um array separando-a por vírgulas
+        $userCharacteristics = explode(',', $userCharacteristicsString);
+
+        // Remove espaços em branco adicionais antes e depois de cada característica
+        $userCharacteristics = array_map('trim', $userCharacteristics);
+
+        // Remove elementos vazios do array
+        $userCharacteristics = array_filter($userCharacteristics);
+
+        // Adicionando log para visualizar as características do usuário
+        info('Características do usuário:', ['autism_characteristics' => $userCharacteristics]);
+
+        // Inicializa a consulta
         $estabelecimentos = Estabelecimento::where('status', 'aprovado')
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
-            })
-            ->with('endereco') // Certifique-se de carregar os endereços relacionados
-            ->get();
+            });
 
-        if ($estabelecimentos->isEmpty()) {
-            \Log::info('Nenhum estabelecimento ativo encontrado na cidade: ' . $city);
-        } else {
-            foreach ($estabelecimentos as $estabelecimento) {
-                \Log::info('Estabelecimento encontrado: ' . $estabelecimento->name);
-            }
+        // Filtra os estabelecimentos que possuem as características do usuário
+        if (!empty($userCharacteristics)) {
+            $estabelecimentos->where(function ($query) use ($userCharacteristics) {
+                foreach ($userCharacteristics as $characteristic) {
+                    $query->orWhere('autism_characteristics', 'LIKE', "%{$characteristic}%");
+                }
+            });
         }
+
+        // Executa a consulta
+        $estabelecimentos = $estabelecimentos->with('endereco')->get();
 
         return $estabelecimentos;
     }
@@ -333,8 +391,16 @@ class EstabelecimentoAuthController extends Controller
     public function getCategories()
     {
         $categories = Estabelecimento::distinct('category')->pluck('category');
-        \Log::info('Categorias: ' . $categories);
         return response()->json($categories);
+    }
+
+
+    public function obterCaracteristicasUsuario(Request $request)
+    {
+
+        $userCharacteristics = $request->user('pessoa_usuaria')->autism_characteristics;
+
+        return response()->json(['autism_characteristics' => $userCharacteristics]);
     }
 
     public function getEstabelecimentosPorCategoria(Request $request)
@@ -342,27 +408,56 @@ class EstabelecimentoAuthController extends Controller
         $category = $request->input('category');
         $city = $request->input('city');
 
+
+        // Busca as características do usuário no banco de dados
+        $userCharacteristicsString = $request->user('pessoa_usuaria')->autism_characteristics;
+
+        // Converte a string em um array separando-a por vírgulas
+        $userCharacteristics = explode(',', $userCharacteristicsString);
+
+        // Remove espaços em branco adicionais antes e depois de cada característica
+        $userCharacteristics = array_map('trim', $userCharacteristics);
+
+        // Remove elementos vazios do array
+        $userCharacteristics = array_filter($userCharacteristics);
+
+        // Adicionando log para visualizar as características do usuário
+        info('Características do usuário:', ['autism_characteristics' => $userCharacteristics]);
+
         $estabelecimentos = Estabelecimento::where('status', 'aprovado')
             ->where('category', $category)
             ->whereHas('endereco', function ($query) use ($city) {
                 $query->where('cidade', $city);
-            })
-            ->get();
+            });
 
+        // Filtra os estabelecimentos que possuem as características do usuário
+        if (!empty($userCharacteristics)) {
+            $estabelecimentos->where(function ($query) use ($userCharacteristics) {
+                foreach ($userCharacteristics as $characteristic) {
+                    $query->orWhere('autism_characteristics', 'LIKE', "%{$characteristic}%");
+                }
+            });
+        }
+
+        // Executa a consulta
+        $estabelecimentos = $estabelecimentos->get();
+
+        // Verifica se encontrou estabelecimentos
         if ($estabelecimentos->isEmpty()) {
-            \Log::info('Nenhum estabelecimento ativo encontrado na categoria ' . $category . ' na cidade ' . $city);
             return response()->json([]);
         } else {
+            // Transforma os dados dos estabelecimentos para o formato JSON
             $estabelecimentosData = $estabelecimentos->map(function ($estabelecimento) {
                 return [
                     'name' => $estabelecimento->name,
                     'category' => $estabelecimento->category,
-                    'endereco' => $estabelecimento->endereco // Certifique-se de que 'endereco' está corretamente relacionado ao modelo
+                    'endereco' => $estabelecimento->endereco
                 ];
             });
             return response()->json($estabelecimentosData);
         }
     }
+
 
     public function contato()
     {
@@ -374,5 +469,13 @@ class EstabelecimentoAuthController extends Controller
         $estabelecimento = Estabelecimento::findOrFail($id);
         $comentarios = AvaliacaoComentario::where('estabelecimento_id', $estabelecimento->id)->with('usuario')->get();
         return view('saibaMais', compact('estabelecimento', 'comentarios'));
+    }
+    
+
+    public function mostrarComentarios($id)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        $comentarios = AvaliacaoComentario::where('estabelecimento_id', $estabelecimento->id)->with('usuario')->get();
+        return view('comentarios', compact('estabelecimento', 'comentarios'));
     }
 }

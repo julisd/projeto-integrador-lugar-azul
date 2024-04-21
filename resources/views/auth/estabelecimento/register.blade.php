@@ -8,7 +8,7 @@
                 <div class="card-header bg-primary text-white">{{ __('Cadastre-se') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('estabelecimento.register') }}">
+                    <form method="POST" action="{{ route('estabelecimento.register') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-3">
                             <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Nome') }}</label>
@@ -37,6 +37,13 @@
                                 @enderror
                             </div>
                         </div>
+                        @csrf
+                        <!-- Outros campos do formulário -->
+                        <div class="form-group">
+                            <label for="image">Imagem do Estabelecimento</label>
+                            <input type="file" class="form-control" id="image" name="image">
+                        </div>
+
 
                         <div class="row mb-3">
                             <label for="description" class="col-md-4 col-form-label text-md-end">{{ __('Descrição') }}</label>
@@ -64,6 +71,28 @@
                                 </select>
 
                                 @error('category')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
+                            <label for="autism_characteristics" class="col-md-4 col-form-label text-md-end">{{ __('Características Adaptáveis para Atender às Necessidades e Preferências dos Autistas') }}</label>
+
+                            <div class="col-md-6">
+                                @foreach($characteristics as $key => $value)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="autism_characteristic_{{ $key }}" name="autism_characteristics[]" value="{{ $key }}">
+                                    <label class="form-check-label" for="autism_characteristic_{{ $key }}">
+                                        {{ $value }}
+                                    </label>
+                                </div>
+                                @endforeach
+
+                                @error('autism_characteristics')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

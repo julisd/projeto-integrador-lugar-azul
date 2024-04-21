@@ -5,7 +5,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow-lg rounded border-0">
+                <div class="card custom-card">
                     <div class="card-body text-center">
                         <i class="fas fa-universal-access fa-3x mb-3 text-primary"></i>
                         <h2 class="card-title font-weight-bold">Bem-Vindo!</h2>
@@ -21,3 +21,16 @@
     </div>
 </div>
 @endsection
+
+<style>
+    .custom-card {
+        background-color: #1E90FF; /* Azul claro */
+        border-radius: 15px; /* Borda arredondada do cartão */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 1); /* Sombra mais suave */
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .custom-card:hover {
+        transform: scale(1.05); /* Efeito de escala no hover */
+    }
+</style>

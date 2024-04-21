@@ -72,6 +72,9 @@
                         {{ Auth::guard('estabelecimento')->user()->name }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownEstabelecimento">
+                        <a class="dropdown-item" href="{{ route('estabelecimento.comentarios', ['id' => Auth::guard('estabelecimento')->user()->id]) }}">
+                            {{ __('Comentários') }}
+                        </a>
                         <a class="dropdown-item" href="{{ route('editarContaEstabelecimento') }}">
                             {{ __('Editar Conta') }}
                         </a>

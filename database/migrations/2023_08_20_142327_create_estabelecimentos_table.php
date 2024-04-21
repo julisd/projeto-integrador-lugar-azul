@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('description');
             $table->string('category');
             $table->string('status');
+            $table->string('autism_characteristics')->nullable();
+            $table->string('image')->nullable();  
             $table->timestamps();
         });
         

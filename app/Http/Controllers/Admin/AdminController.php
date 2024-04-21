@@ -8,7 +8,8 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Estabelecimento;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NegacaoEstabelecimento;
 
 
 class AdminController extends Controller
@@ -113,21 +114,34 @@ class AdminController extends Controller
         return view('admin.verificarEstabelecimentos', compact('estabelecimentosPendentes'));
     }
 
+    public function negarEstabelecimento($id, Request $request)
+    {
+        $estabelecimento = Estabelecimento::findOrFail($id);
+        $estabelecimento->status = 'negado';
+        $estabelecimento->motivo_negacao = $request->motivo;
+        $estabelecimento->save();
+    
+        // Adicione mensagens de debug
+        info('Estabelecimento negado com sucesso.');
+        info('Motivo de recusa: ' . $request->motivo);
+    
+        // Se o estabelecimento foi negado, redirecione com a mensagem de aviso
+        return redirect()->route('admin.verificarEstabelecimentos')->with('negado', 'Estabelecimento negado com sucesso.');
+    }
+    
     public function aprovarEstabelecimento($id)
     {
         $estabelecimento = Estabelecimento::findOrFail($id);
         $estabelecimento->status = 'aprovado';
         $estabelecimento->save();
-
-        return redirect()->route('admin.verificarEstabelecimentos')->with('success', 'Estabelecimento aprovado com sucesso.');
+    
+        // Adicione mensagem de debug
+        info('Estabelecimento aprovado com sucesso.');
+    
+        // Se o estabelecimento foi aprovado, redirecione com a mensagem de aviso
+        return redirect()->route('admin.verificarEstabelecimentos')->with('aprovado', 'Estabelecimento aprovado com sucesso.');
     }
-
-    public function negarEstabelecimento($id)
-    {
-        $estabelecimento = Estabelecimento::findOrFail($id);
-        $estabelecimento->status = 'negado';
-        $estabelecimento->save();
-
-        return redirect()->route('admin.verificarEstabelecimentos')->with('success', 'Estabelecimento negado com sucesso.');
-    }
+    
+    
+    
 }

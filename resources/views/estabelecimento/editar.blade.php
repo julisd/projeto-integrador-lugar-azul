@@ -9,7 +9,7 @@
                 <div class="card-header">{{ __('Editar Cadastro') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('estabelecimento.atualizarConta') }}">
+                    <form method="POST" action="{{ route('estabelecimento.atualizarConta') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -54,6 +54,17 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="image">Imagem</label>
+                            <input id="image" type="file" class="form-control-file @error('image') is-invalid @enderror" name="image" accept="image/*">
+                            @error('image')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+
+
+                        <div class="form-group">
                             <label for="description">Descrição</label>
                             <textarea id="description" class="form-control @error('description') is-invalid @enderror" name="description" required>{{ Auth::user()->description }}</textarea>
                             @error('description')
@@ -77,6 +88,24 @@
                             </span>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <label for="autism_characteristics">Características Adaptáveis para Atender às Necessidades e Preferências dos Autistas</label>
+                            <select id="autism_characteristics" name="autism_characteristics[]" class="form-control" multiple>
+                                @foreach ($characteristics as $key => $value)
+                                <option value="{{ $key }}" {{ is_array(Auth::user()->autism_characteristics) && in_array($key, Auth::user()->autism_characteristics) ? 'selected' : '' }}>
+                                    {{ $value }}
+                                </option>
+                                @endforeach
+                            </select>
+
+                            @error('autism_characteristics')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+
 
                         <div class="form-group">
                             <label for="cep">CEP</label>
