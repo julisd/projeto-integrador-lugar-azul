@@ -285,7 +285,7 @@
                     <!-- Formulário de avaliação -->
                     <form action="{{ route('criarAvaliacao.estabelecimento') }}" method="POST">
                         @csrf
-                        <input type="hidden" id="idEstabelecimento" value="{{ $estabelecimento->id }}">
+                        <input type="hidden" name="idEstabelecimento" value="{{ $estabelecimento->id }}">
 
                         <div class="mb-3">
                             <label for="avaliacao" class="form-label">Sua Avaliação:</label>
