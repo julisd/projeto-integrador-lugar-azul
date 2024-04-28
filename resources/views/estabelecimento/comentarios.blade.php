@@ -52,11 +52,14 @@
             margin-top: 10px;
         }
 
-#filtroComentarios {
-    width: 200px; /* Defina o tamanho desejado */
-    margin: 20px auto; /* Adiciona uma margem de 20px em todos os lados e centraliza horizontalmente */
-    display: block; /* Garante que ele seja exibido como um bloco */
-}
+        #filtroComentarios {
+            width: 200px;
+            /* Defina o tamanho desejado */
+            margin: 20px auto;
+            /* Adiciona uma margem de 20px em todos os lados e centraliza horizontalmente */
+            display: block;
+            /* Garante que ele seja exibido como um bloco */
+        }
 
 
 
@@ -99,7 +102,6 @@
         .resposta-card .card-text {
             margin-bottom: 0;
         }
-        
     </style>
 </head>
 
@@ -116,10 +118,10 @@
     </nav>
 
     <select id="filtroComentarios" class="form-control selectpicker" data-style="btn-primary">
-    <option value="todos">Todos</option>
-    <option value="respondidos">Respondidos</option>
-    <option value="nao-respondidos">Não Respondidos</option>
-</select>
+        <option value="todos">Todos</option>
+        <option value="respondidos">Respondidos</option>
+        <option value="nao-respondidos">Não Respondidos</option>
+    </select>
 
 
     <div id="listaComentarios">
@@ -185,7 +187,7 @@
                 });
         }
 
-    
+
 
         function renderizarComentarios(comentarios) {
             const listaComentarios = document.getElementById('listaComentarios');
@@ -252,43 +254,42 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-    const editarBotoes = document.querySelectorAll('.editar-comentario');
-    editarBotoes.forEach(botao => {
-        botao.addEventListener('click', () => {
-            const comentarioID = botao.getAttribute('data-comentario-id');
-            const respostaTextArea = document.querySelector(`.comentario[data-comentario-id="${comentarioID}"] textarea[name="resposta"]`);
-            const respostaAtual = document.querySelector(`.comentario[data-comentario-id="${comentarioID}"] .resposta-card .card-text`).innerText;
-            
-            // Preencha o campo de resposta com o texto da resposta atual
-            respostaTextArea.value = respostaAtual;
+            const editarBotoes = document.querySelectorAll('.editar-comentario');
+            editarBotoes.forEach(botao => {
+                botao.addEventListener('click', () => {
+                    const comentarioID = botao.getAttribute('data-comentario-id');
+                    const respostaTextArea = document.querySelector(`.comentario[data-comentario-id="${comentarioID}"] textarea[name="resposta"]`);
+                    const respostaAtual = document.querySelector(`.comentario[data-comentario-id="${comentarioID}"] .resposta-card .card-text`).innerText;
+
+                    // Preencha o campo de resposta com o texto da resposta atual
+                    respostaTextArea.value = respostaAtual;
+                });
+            });
         });
-    });
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-    const selectFiltro = document.getElementById('filtroComentarios');
-    const comentarios = document.querySelectorAll('.comentario');
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectFiltro = document.getElementById('filtroComentarios');
+            const comentarios = document.querySelectorAll('.comentario');
 
-    selectFiltro.addEventListener('change', () => {
-        const filtroSelecionado = selectFiltro.value;
-        comentarios.forEach(comentario => {
-            if (filtroSelecionado === 'respondidos') {
-                if (comentario.querySelector('.resposta-card')) {
-                    comentario.style.display = 'block';
-                } else {
-                    comentario.style.display = 'none';
-                }
-            } else if (filtroSelecionado === 'nao-respondidos') {
-                if (!comentario.querySelector('.resposta-card')) {
-                    comentario.style.display = 'block';
-                } else {
-                    comentario.style.display = 'none';
-                }
-            } else {
-                comentario.style.display = 'block';
-            }
+            selectFiltro.addEventListener('change', () => {
+                const filtroSelecionado = selectFiltro.value;
+                comentarios.forEach(comentario => {
+                    if (filtroSelecionado === 'respondidos') {
+                        if (comentario.querySelector('.resposta-card')) {
+                            comentario.style.display = 'block';
+                        } else {
+                            comentario.style.display = 'none';
+                        }
+                    } else if (filtroSelecionado === 'nao-respondidos') {
+                        if (!comentario.querySelector('.resposta-card')) {
+                            comentario.style.display = 'block';
+                        } else {
+                            comentario.style.display = 'none';
+                        }
+                    } else {
+                        comentario.style.display = 'block';
+                    }
+                });
+            });
         });
-    });
-});
-
     </script>
