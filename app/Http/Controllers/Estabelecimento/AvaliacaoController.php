@@ -107,7 +107,7 @@ class AvaliacaoController extends Controller
         $validatedData = $request->validate([
             'avaliacao' => 'required|integer|min:1|max:5',
             'comentario' => 'nullable|string',
-            'idEstabelecimento' => 'required|exists:estabelecimentos,id'
+            'estabelecimento_id' => 'required|exists:estabelecimentos,id'
         ]);
 
         // Obtendo o ID do usuário pessoa_usuaria autenticado
@@ -117,7 +117,7 @@ class AvaliacaoController extends Controller
         // Criar uma nova avaliação
         $avaliacao = new AvaliacaoComentario();
         $avaliacao->usuario_id = $usuarioId;
-        $avaliacao->estabelecimento_id = $validatedData['idEstabelecimento'];
+        $avaliacao->estabelecimento_id = $validatedData['estabelecimento_id'];
         $avaliacao->avaliacao = $validatedData['avaliacao'];
         $avaliacao->comentario = $validatedData['comentario'];
         $avaliacao->save();
