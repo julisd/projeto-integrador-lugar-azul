@@ -9,6 +9,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+
     <style>
         /* Cor azul personalizada */
         :root {
@@ -51,6 +52,14 @@
             margin-top: 10px;
         }
 
+#filtroComentarios {
+    width: 200px; /* Defina o tamanho desejado */
+    margin: 20px auto; /* Adiciona uma margem de 20px em todos os lados e centraliza horizontalmente */
+    display: block; /* Garante que ele seja exibido como um bloco */
+}
+
+
+
         .resposta p {
             margin-bottom: 5px;
         }
@@ -90,11 +99,12 @@
         .resposta-card .card-text {
             margin-bottom: 0;
         }
+        
     </style>
 </head>
 
 <body>
-    <!-- Barra de navegação -->
+
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#" id="logo">
@@ -104,6 +114,14 @@
 
         </div>
     </nav>
+
+    <select id="filtroComentarios" class="form-control selectpicker" data-style="btn-primary">
+    <option value="todos">Todos</option>
+    <option value="respondidos">Respondidos</option>
+    <option value="nao-respondidos">Não Respondidos</option>
+</select>
+
+
     <div id="listaComentarios">
         @foreach($comentarios as $comentario)
         <div class="card comentario" data-comentario-id="{{ $comentario['id'] }}">
@@ -127,7 +145,6 @@
                             <p class="card-date"><b>
                                     Data: {{ $resposta['created_at'] }}</b></p>
                             <p class="card-text" style="margin-left: 20px;">{{ $resposta['texto'] }}</p>
-
 
                         </div>
                     </div>
@@ -233,4 +250,45 @@
                     console.error('Erro ao submeter resposta:', error);
                 });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const editarBotoes = document.querySelectorAll('.editar-comentario');
+    editarBotoes.forEach(botao => {
+        botao.addEventListener('click', () => {
+            const comentarioID = botao.getAttribute('data-comentario-id');
+            const respostaTextArea = document.querySelector(`.comentario[data-comentario-id="${comentarioID}"] textarea[name="resposta"]`);
+            const respostaAtual = document.querySelector(`.comentario[data-comentario-id="${comentarioID}"] .resposta-card .card-text`).innerText;
+            
+            // Preencha o campo de resposta com o texto da resposta atual
+            respostaTextArea.value = respostaAtual;
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const selectFiltro = document.getElementById('filtroComentarios');
+    const comentarios = document.querySelectorAll('.comentario');
+
+    selectFiltro.addEventListener('change', () => {
+        const filtroSelecionado = selectFiltro.value;
+        comentarios.forEach(comentario => {
+            if (filtroSelecionado === 'respondidos') {
+                if (comentario.querySelector('.resposta-card')) {
+                    comentario.style.display = 'block';
+                } else {
+                    comentario.style.display = 'none';
+                }
+            } else if (filtroSelecionado === 'nao-respondidos') {
+                if (!comentario.querySelector('.resposta-card')) {
+                    comentario.style.display = 'block';
+                } else {
+                    comentario.style.display = 'none';
+                }
+            } else {
+                comentario.style.display = 'block';
+            }
+        });
+    });
+});
+
     </script>

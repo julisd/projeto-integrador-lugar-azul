@@ -311,6 +311,7 @@
                     <div id="mediaAvaliacoes"></div>
 
                     <select id="ordenarPor" onchange="ordenarComentarios()">
+                        <option value="tudo">Todos</option>
                         <option value="recentes">Mais recentes</option>
                         <option value="maiorAvaliacao">Maior avaliação</option>
                         <option value="menorAvaliacao">Menor avaliação</option>
@@ -470,6 +471,7 @@
                         if (comentario.respostas && comentario.respostas.length > 0) {
                             const respostaTitulo = document.createElement('h6');
                             respostaTitulo.innerText = 'Resposta do proprietário:';
+                            respostaTitulo.style.fontWeight = 'bold';
                             cardBody.appendChild(respostaTitulo);
 
                             // Loop através das respostas
@@ -562,8 +564,6 @@
             return dataB - dataA;
         }
 
-
-
         // Função para ordenar os comentários
         function ordenarComentarios() {
             console.log("Ordenando comentários...");
@@ -581,27 +581,41 @@
             // Converte a NodeList em um array para facilitar a ordenação
             const arrayComentarios = Array.from(comentarios);
 
-            // Ordena os comentários com base no critério selecionado
-            switch (criterio) {
-                case 'recentes':
-                    arrayComentarios.sort(compararPorDataRecente);
-                    break;
-                case 'maiorAvaliacao':
-                    arrayComentarios.sort(compararPorMaiorAvaliacao);
-                    break;
-                case 'menorAvaliacao':
-                    arrayComentarios.sort(compararPorMenorAvaliacao);
-                    break;
-                default:
-                    console.log("Critério de ordenação não reconhecido:", criterio);
-            }
+            // Verifica se o critério selecionado é "todos"
+            if (criterio === 'tudo') {
+                // Remove qualquer ordenação existente
+                listaComentarios.innerHTML = ''; // Limpa a lista
 
-            // Atualiza a lista de comentários na interface
-            listaComentarios.innerHTML = '';
-            arrayComentarios.forEach(comentario => {
-                listaComentarios.appendChild(comentario);
-            });
+                // Adiciona novamente os comentários na ordem original
+                arrayComentarios.forEach(comentario => {
+                    listaComentarios.appendChild(comentario);
+                });
+            } else {
+                // Ordena os comentários com base no critério selecionado
+                switch (criterio) {
+                    case 'recentes':
+                        arrayComentarios.sort(compararPorDataRecente);
+                        break;
+                    case 'maiorAvaliacao':
+                        arrayComentarios.sort(compararPorMaiorAvaliacao);
+                        break;
+                    case 'menorAvaliacao':
+                        arrayComentarios.sort(compararPorMenorAvaliacao);
+                        break;
+                    default:
+                        console.log("Critério de ordenação não reconhecido:", criterio);
+                }
+
+                // Limpa a lista antes de reordenar os comentários
+                listaComentarios.innerHTML = '';
+
+                // Adiciona os comentários reordenados à lista
+                arrayComentarios.forEach(comentario => {
+                    listaComentarios.appendChild(comentario);
+                });
+            }
         }
+
 
 
         function formatarData(dataString) {

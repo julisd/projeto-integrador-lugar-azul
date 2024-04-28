@@ -69,36 +69,43 @@ class AvaliacaoController extends Controller
 
 
     public function responderComentario(Request $request)
-    {
-        try {
-            Log::info('Resposta salva: bateu');
+{
+    try {
+        Log::info('Resposta salva: bateu');
 
-            $validatedData = $request->validate([
-                'avaliacao_comentario_id' => 'required|exists:avaliacoes_comentarios,id',
-                'resposta' => 'required|string',
-            ]);
+        $validatedData = $request->validate([
+            'avaliacao_comentario_id' => 'required|exists:avaliacoes_comentarios,id',
+            'resposta' => 'required|string',
+        ]);
 
-            Log::info('Validação passou');
+        Log::info('Validação passou');
 
-            // Salvar a resposta ao comentário
+        // Verificar se já existe uma resposta para esse comentário
+        $respostaExistente = AvaliacaoComentarioResposta::where('avaliacao_comentario_id', $validatedData['avaliacao_comentario_id'])->first();
+
+        if ($respostaExistente) {
+            // Se já existe uma resposta, atualize-a
+            $respostaExistente->update(['resposta' => $validatedData['resposta']]);
+            Log::info('Resposta atualizada: ' . $validatedData['resposta']);
+        } else {
+            // Se não existe uma resposta, crie uma nova
             $resposta = new AvaliacaoComentarioResposta();
             $resposta->avaliacao_comentario_id = $validatedData['avaliacao_comentario_id'];
             $resposta->resposta = $validatedData['resposta'];
             $resposta->save();
-
             Log::info('Resposta salva: ' . $validatedData['resposta']);
-
-            // Retornar uma resposta JSON indicando sucesso
-            return response()->json(['success' => 'Resposta enviada com sucesso!']);
-        } catch (\Exception $e) {
-            // Log do erro
-            Log::error('Erro ao responder comentário: ' . $e->getMessage());
-
-            // Retornar uma resposta JSON indicando erro
-            return response()->json(['error' => 'Ocorreu um erro ao responder ao comentário. Por favor, tente novamente.'], 500);
         }
-    }
 
+        // Retornar uma resposta JSON indicando sucesso
+        return response()->json(['success' => 'Resposta enviada com sucesso!']);
+    } catch (\Exception $e) {
+        // Log do erro
+        Log::error('Erro ao responder comentário: ' . $e->getMessage());
+
+        // Retornar uma resposta JSON indicando erro
+        return response()->json(['error' => 'Ocorreu um erro ao responder ao comentário. Por favor, tente novamente.'], 500);
+    }
+}
 
 
     public function criarAvaliacao(Request $request)
