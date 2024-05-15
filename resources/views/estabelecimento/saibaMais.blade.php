@@ -266,7 +266,6 @@
                         <div class="card-body text-center">
                             <img src="{{ asset('uploads/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
                             <div class="mb-4">
-                                <h2>{{ $nomeDoEstabelecimento }}</h2>
                                 <p class="lead">{{ $descricao }}</p>
                             </div>
                         </div>
@@ -280,9 +279,9 @@
                     <h1>Avaliar {{ $nomeDoEstabelecimento }}</h1>
                     <p>Compartilhe sua experiência! Sua opinião é muito importante para nós.</p>
                     <!-- Formulário de avaliação -->
-                    <form action="{{ route('criarAvaliacao.estabelecimento') }}" method="POST">
+                    <form action="{{ route('criarAvaliacao') }}" method="POST">
                         @csrf
-                        <input type="hidden" id="estabelecimento_id" value="{{ $estabelecimento->id }}">
+                        <input type="hidden" id="estabelecimento_id" name="estabelecimento_id" value="{{ $estabelecimento->id }}">
 
                         <div class="mb-3">
                             <label for="avaliacao" class="form-label">Sua Avaliação:</label>
@@ -305,22 +304,22 @@
             </div>
 
             <div id="verComentarios" class="carousel-item" data-bs-interval="10000">
-                <div class="section">
-                    <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
+    <div class="section">
+        <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
 
-                    <div id="mediaAvaliacoes"></div>
+        <div id="mediaAvaliacoes"></div>
 
-                    <select id="ordenarPor" onchange="ordenarComentarios()">
-                        <option value="tudo">Todos</option>
-                        <option value="recentes">Mais recentes</option>
-                        <option value="maiorAvaliacao">Maior avaliação</option>
-                        <option value="menorAvaliacao">Menor avaliação</option>
-                    </select>
+        <select id="ordenarPor" onchange="ordenarComentarios()" style="margin-bottom: 20px;">
+            <option value="tudo">Todos</option>
+            <option value="recentes">Mais recentes</option>
+            <option value="maiorAvaliacao">Maior avaliação</option>
+            <option value="menorAvaliacao">Menor avaliação</option>
+        </select>
 
-                    <!-- Lista para exibir os comentários -->
-                    <div id="listaComentarios"></div>
-                </div>
-            </div>
+        <!-- Lista para exibir os comentários -->
+        <div id="listaComentarios"></div>
+    </div>
+</div>
 
             <!-- Informações da Empresa -->
             <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">

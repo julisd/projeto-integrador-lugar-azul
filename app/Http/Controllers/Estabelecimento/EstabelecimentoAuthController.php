@@ -79,7 +79,7 @@ class EstabelecimentoAuthController extends Controller
             'numero' => $endereco->numero,
             'complemento' => $endereco->complemento,
             'bairro' => $endereco->bairro,
-            'cidade' => $endereco->city,
+            'cidade' => $endereco->cidade,
             'horariosEstabelecimento' => $horariosEstabelecimento, // Passa a coleção completa para a view
 
         ]);

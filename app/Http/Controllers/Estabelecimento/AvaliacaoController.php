@@ -108,30 +108,44 @@ class AvaliacaoController extends Controller
 }
 
 
-    public function criarAvaliacao(Request $request)
-    {
-        // Validando os dados recebidos no request
-        $validatedData = $request->validate([
-            'avaliacao' => 'required|integer|min:1|max:5',
-            'comentario' => 'nullable|string',
-            'estabelecimento_id' => 'required|exists:estabelecimentos,id'
-        ]);
+public function criarAvaliacao(Request $request)
+{
+    Log::info('Iniciando o processo de criação de avaliação.');
 
-        // Obtendo o ID do usuário pessoa_usuaria autenticado
-        $usuarioId = auth('pessoa_usuaria')->id();
+    Log::info('Dados recebidos no request: ' . json_encode($request->all()));
+
+    // Validando os dados recebidos no request
+    $validatedData = $request->validate([
+        'avaliacao' => 'required|integer|min:1|max:5',
+        'comentario' => 'nullable|string',
+        'estabelecimento_id' => 'required|exists:estabelecimentos,id'
+    ]);
+
+    // Obtendo o ID do estabelecimento
+    $estabelecimentoId = $request->input('estabelecimento_id');
+
+    // Obtendo o ID do usuário pessoa_usuaria autenticado
+    $usuarioId = auth('pessoa_usuaria')->id();
+
+    // Log do início do processo de criação de avaliação
+    Log::info('Iniciando o processo de criação de avaliação.');
+
+    // Criar uma nova avaliação
+    $avaliacao = new AvaliacaoComentario();
+    $avaliacao->usuario_id = $usuarioId;
+    $avaliacao->estabelecimento_id = $estabelecimentoId;
+    $avaliacao->avaliacao = $validatedData['avaliacao'];
+    $avaliacao->comentario = $validatedData['comentario'];
+    $avaliacao->save();
+
+    // Log da conclusão do processo de criação de avaliação
+    Log::info('Avaliação criada com sucesso!');
+
+    // Redirecionamento após criar a avaliação
+    return redirect()->back()->with('success', 'Avaliação criada com sucesso!');
+}
 
 
-        // Criar uma nova avaliação
-        $avaliacao = new AvaliacaoComentario();
-        $avaliacao->usuario_id = $usuarioId;
-        $avaliacao->estabelecimento_id = $validatedData['estabelecimento_id'];
-        $avaliacao->avaliacao = $validatedData['avaliacao'];
-        $avaliacao->comentario = $validatedData['comentario'];
-        $avaliacao->save();
-
-        // Redirecionamento após criar a avaliação
-        return redirect()->back()->with('success', 'Avaliação criada com sucesso!');
-    }
 
 
 

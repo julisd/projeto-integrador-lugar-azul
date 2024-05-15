@@ -147,11 +147,12 @@
         </div>
 
         <div class="row mt-3">
-            <div class="col-md-12">
-                <div id="map"></div>
-                <div id="estabelecimentos-list" style="display:none;"></div>
-            </div>
-        </div>
+    <div class="col-md-12">
+        <div id="map" style="margin-bottom: 20px;"></div>
+        <div id="estabelecimentos-list" style="display:none;"></div>
+    </div>
+</div>
+
     </div>
     <script>
         let map;
@@ -232,6 +233,7 @@
                     Categoria: ${estabelecimento.category}<br>
                     Endereço: ${address}<br>
                     <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}">Saiba mais</a>
+                    
                 </div>
             `);
                     markers.push(marker);
@@ -257,13 +259,16 @@
                     const saibaMaisLink = document.createElement('a');
                     saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
                     saibaMaisLink.textContent = 'Saiba mais';
+                    const br = document.createElement('br'); // Adicionando um elemento <br>
+
 
                     listItem.appendChild(image);
                     listItem.appendChild(name);
                     listItem.appendChild(category);
                     listItem.appendChild(endereco);
                     listItem.appendChild(saibaMaisLink);
-
+                    listItem.appendChild(br); 
+                    
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
                     });
