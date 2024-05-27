@@ -20,6 +20,28 @@ class EstabelecimentoAuthController extends Controller
 
     use SendsPasswordResetEmails;
 
+    public function obterTodosEstabelecimentosAtivosSemCaracteristicas(Request $request)
+    {
+       
+        // Obtém os parâmetros da solicitação
+        $city = $request->input('city');
+        $category = $request->input('category');
+
+        // Adicionando log para visualizar as características do usuário
+        // Inicializa a consulta
+        $estabelecimentos = Estabelecimento::where('status', 'aprovado')
+            ->whereHas('endereco', function ($query) use ($city) {
+                $query->where('cidade', $city);
+            });
+
+        // Filtra os estabelecimentos que possuem as características do usuário
+
+        // Executa a consulta
+        $estabelecimentos = $estabelecimentos->with('endereco')->get();
+
+        return $estabelecimentos;
+    }
+
     public function obterDadosEstabelecimento(Request $request)
     {
         $id = $request->input('id');
@@ -57,7 +79,7 @@ class EstabelecimentoAuthController extends Controller
             'numero' => $endereco->numero,
             'complemento' => $endereco->complemento,
             'bairro' => $endereco->bairro,
-            'cidade' => $endereco->city,
+            'cidade' => $endereco->cidade,
             'horariosEstabelecimento' => $horariosEstabelecimento, // Passa a coleção completa para a view
 
         ]);

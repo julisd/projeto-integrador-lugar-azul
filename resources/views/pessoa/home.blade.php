@@ -123,6 +123,13 @@
                     <option value="all">Tudo</option>
                 </select>
             </div>
+
+            <div class="form-group">
+                <label for="consider-characteristics">Considerar Características:</label>
+                <input type="checkbox" id="consider-characteristics" checked>
+            </div>
+
+
             <button class="btn btn-primary btn-search" onclick="searchPlaces()">Procurar</button>
         </div>
 
@@ -140,11 +147,12 @@
         </div>
 
         <div class="row mt-3">
-            <div class="col-md-12">
-                <div id="map"></div>
-                <div id="estabelecimentos-list" style="display:none;"></div>
-            </div>
-        </div>
+    <div class="col-md-12">
+        <div id="map" style="margin-bottom: 20px;"></div>
+        <div id="estabelecimentos-list" style="display:none;"></div>
+    </div>
+</div>
+
     </div>
     <script>
         let map;
@@ -225,6 +233,7 @@
                     Categoria: ${estabelecimento.category}<br>
                     Endereço: ${address}<br>
                     <a href="/detalhes-estabelecimento/${estabelecimento.endereco.id}">Saiba mais</a>
+                    
                 </div>
             `);
                     markers.push(marker);
@@ -250,13 +259,16 @@
                     const saibaMaisLink = document.createElement('a');
                     saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
                     saibaMaisLink.textContent = 'Saiba mais';
+                    const br = document.createElement('br'); // Adicionando um elemento <br>
+
 
                     listItem.appendChild(image);
                     listItem.appendChild(name);
                     listItem.appendChild(category);
                     listItem.appendChild(endereco);
                     listItem.appendChild(saibaMaisLink);
-
+                    listItem.appendChild(br); 
+                    
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
                     });
@@ -338,14 +350,32 @@
             infowindow.open(map);
         }
 
+        function addAllMarkersAndListWithoutCharacteristics(city) {
+            clearMarkers();
+            estabelecimentosList.innerHTML = '';
+            markers = [];
+            fetch(`/obter-todos-estabelecimentos-ativos-sem-caracteristicas?city=${city}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(estabelecimento => {
+                        addEstabelecimentoToList(estabelecimento);
+                    });
+                })
+                .catch(error => console.error('Erro ao obter estabelecimentos ativos:', error));
+        }
+
+
+
         function searchPlaces() {
             clearMarkers();
             // Obtém os valores de cidade e categoria do HTML
             const city = document.getElementById('city').value;
             const category = document.getElementById('category').value;
+            const considerCharacteristics = document.getElementById('consider-characteristics').checked;
 
             console.log('Cidade selecionada:', city);
             console.log('Categoria selecionada:', category);
+            console.log('Considerar características:', considerCharacteristics);
 
             if (city === '') {
                 alert('Por favor, digite uma cidade.');
@@ -353,28 +383,20 @@
             }
 
             if (category === 'all') {
-                clearMarkers();
                 console.log('Obtendo todos os estabelecimentos ativos...');
-                addAllMarkersAndList(city);
+                if (considerCharacteristics) {
+                    // Se considerar características, adicione os estabelecimentos com base nas características do usuário
+                    console.log('Considerando características do usuário...');
+                    addAllMarkersAndList(city);
+                } else {
+                    // Caso contrário, adicione todos os estabelecimentos sem considerar características
+                    console.log('Não considerando características do usuário...');
+                    addAllMarkersAndListWithoutCharacteristics(city);
+                }
             } else {
-                console.log('Obtendo características do usuário...');
-                // Faz uma solicitação para obter as características do usuário do backend
-                fetch('/obter-caracteristicas-usuario')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Extrai as características do usuário da resposta
-                        const selectedCharacteristics = data.autism_characteristics;
-
-                        console.log('Características do usuário:', selectedCharacteristics);
-                        console.log('Enviando solicitação para obter estabelecimentos por categoria:', {
-                            category: category,
-                            city: city,
-                            autism_characteristics: selectedCharacteristics
-                        });
-
-                        // Faz uma solicitação para obter os estabelecimentos por categoria, passando as características do usuário
-                        return fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&autism_characteristics=${selectedCharacteristics}`);
-                    })
+                console.log('Obtendo estabelecimentos por categoria...');
+                // Faz uma solicitação para obter os estabelecimentos por categoria, levando em consideração ou não as características do usuário, dependendo do valor do checkbox
+                fetch(`/obter-estabelecimentos-por-categoria?category=${category}&city=${city}&consider_characteristics=${considerCharacteristics}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log('Resposta da solicitação de estabelecimentos:', data);
@@ -389,7 +411,6 @@
                     })
                     .catch(error => console.error('Erro ao obter estabelecimentos:', error));
             }
-
         }
     </script>
 

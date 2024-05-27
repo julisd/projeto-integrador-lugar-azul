@@ -18,7 +18,6 @@
 
         .navbar {
             background-color: #007bff;
-            /* Alterei a cor da barra de navegação */
             color: #fff;
         }
 
@@ -211,8 +210,6 @@
 </head>
 
 <body>
-
-
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <!-- Logo e texto -->
@@ -262,14 +259,13 @@
             <!-- Slides -->
             <div id="sobre" class="carousel-item active" data-bs-interval="10000">
                 <div class="section">
-                    <h1>Sobre a Empresa</h1>
+                    <h1>Sobre {{ $nomeDoEstabelecimento }}</h1>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="card-body text-center">
                             <img src="{{ asset('uploads/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
                             <div class="mb-4">
-                                <h2>{{ $nomeDoEstabelecimento }}</h2>
                                 <p class="lead">{{ $descricao }}</p>
                             </div>
                         </div>
@@ -280,12 +276,12 @@
             <!-- Slide 2: Avaliar -->
             <div id="avaliar" class="carousel-item" data-bs-interval="10000">
                 <div class="section">
-                    <h1>Avaliar</h1>
+                    <h1>Avaliar {{ $nomeDoEstabelecimento }}</h1>
                     <p>Compartilhe sua experiência! Sua opinião é muito importante para nós.</p>
                     <!-- Formulário de avaliação -->
-                    <form action="{{ route('criarAvaliacao.estabelecimento') }}" method="POST">
+                    <form action="{{ route('criarAvaliacao') }}" method="POST">
                         @csrf
-                        <input type="hidden" id="idEstabelecimento" value="{{ $estabelecimento->id }}">
+                        <input type="hidden" id="estabelecimento_id" name="estabelecimento_id" value="{{ $estabelecimento->id }}">
 
                         <div class="mb-3">
                             <label for="avaliacao" class="form-label">Sua Avaliação:</label>
@@ -308,17 +304,27 @@
             </div>
 
             <div id="verComentarios" class="carousel-item" data-bs-interval="10000">
-                <div class="section">
-                    <h1>Comentários</h1>
-                    <!-- Lista para exibir os comentários -->
-                    <div id="listaComentarios"></div>
-                </div>
-            </div>
+    <div class="section">
+        <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
+
+        <div id="mediaAvaliacoes"></div>
+
+        <select id="ordenarPor" onchange="ordenarComentarios()" style="margin-bottom: 20px;">
+            <option value="tudo">Todos</option>
+            <option value="recentes">Mais recentes</option>
+            <option value="maiorAvaliacao">Maior avaliação</option>
+            <option value="menorAvaliacao">Menor avaliação</option>
+        </select>
+
+        <!-- Lista para exibir os comentários -->
+        <div id="listaComentarios"></div>
+    </div>
+</div>
 
             <!-- Informações da Empresa -->
             <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">
                 <div class="section">
-                    <h1>Informações da Empresa</h1>
+                    <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
                     <div class="col-md-4">
                         <div class="info-box">
                             <i class="fas fa-phone-alt mb-4"></i>
@@ -409,11 +415,15 @@
                 });
         }
         document.addEventListener('DOMContentLoaded', () => {
-            const idDoEstabelecimento = document.getElementById('idEstabelecimento').value;
+            const idDoEstabelecimento = document.getElementById('estabelecimento_id').value;
 
             obterComentariosEstabelecimento(idDoEstabelecimento)
                 .then(data => {
                     console.log('Dados obtidos:', data);
+
+                    const mediaAvaliacoes = calcularMediaAvaliacoes(data.comentarios);
+                    console.log('Média de Avaliações:', mediaAvaliacoes);
+                    exibirMediaAvaliacoes(mediaAvaliacoes);
 
                     const listaComentarios = document.getElementById('listaComentarios');
                     if (!listaComentarios) {
@@ -460,12 +470,13 @@
                         if (comentario.respostas && comentario.respostas.length > 0) {
                             const respostaTitulo = document.createElement('h6');
                             respostaTitulo.innerText = 'Resposta do proprietário:';
+                            respostaTitulo.style.fontWeight = 'bold';
                             cardBody.appendChild(respostaTitulo);
 
                             // Loop através das respostas
                             comentario.respostas.forEach(resposta => {
                                 const respostaCard = document.createElement('div'); // Criando uma div para cada resposta
-                                respostaCard.classList.add('resposta', 'bg-white'); // Adicionando classe resposta e background branco
+                                respostaCard.classList.add('respost'); // Adicionando classe resposta e background branco
 
                                 const respostaText = document.createElement('p'); // Criando um parágrafo para o texto da resposta
                                 respostaText.innerText = resposta.texto; // Adicionando o texto da resposta
@@ -490,15 +501,130 @@
                 });
         });
 
+        function calcularMediaAvaliacoes(comentarios) {
+            let totalAvaliacoes = 0;
+            comentarios.forEach(comentario => {
+                totalAvaliacoes += comentario.avaliacao;
+            });
+            const media = totalAvaliacoes / comentarios.length;
+            return media; // A média já está na escala de 0 a 5
+        }
+
+        function exibirMediaAvaliacoes(media) {
+            const mediaElement = document.getElementById('mediaAvaliacoes');
+            if (mediaElement) {
+                // Converte a média para estrelas
+                let estrelas = '';
+                // Exibe apenas uma estrela
+                if (media >= 1) {
+                    estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
+                } else {
+                    estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
+                }
+                // Exibe o valor da média com uma casa decimal após a vírgula
+                estrelas += `<span>${media.toFixed(1)}</span>`;
+                mediaElement.innerHTML = estrelas;
+            }
+        }
+
+        function compararPorMaiorAvaliacao(a, b) {
+            const avaliacaoA = a.querySelectorAll('.rating .checked').length;
+            const avaliacaoB = b.querySelectorAll('.rating .checked').length;
+            return avaliacaoB - avaliacaoA;
+        }
+
+        function compararPorMenorAvaliacao(a, b) {
+            const avaliacaoA = a.querySelectorAll('.rating .checked').length;
+            const avaliacaoB = b.querySelectorAll('.rating .checked').length;
+            return avaliacaoA - avaliacaoB;
+        }
 
 
-        function formatarData(data) {
+        function compararPorDataRecente(a, b) {
+            const regex = /Data: (\d{2})\/(\d{2})\/(\d{4})/; // Expressão regular para extrair data no formato "DD/MM/YYYY"
+            const dataAString = a.querySelector('.card-date').innerText.trim();
+            const dataBString = b.querySelector('.card-date').innerText.trim();
+
+            // Extrair as partes da data usando a expressão regular
+            const [, diaA, mesA, anoA] = regex.exec(dataAString);
+            const [, diaB, mesB, anoB] = regex.exec(dataBString);
+
+            // Criar objetos Date com as partes extraídas
+            const dataA = new Date(parseInt(anoA), parseInt(mesA) - 1, parseInt(diaA));
+            const dataB = new Date(parseInt(anoB), parseInt(mesB) - 1, parseInt(diaB));
+
+            // Verificar se as datas são válidas
+            if (isNaN(dataA.getTime()) || isNaN(dataB.getTime())) {
+                console.error("Erro: Uma ou ambas as datas não são válidas.");
+                return 0; // ou alguma outra ação adequada, dependendo do contexto
+            }
+
+            // Retornar a diferença de tempo entre as datas
+            return dataB - dataA;
+        }
+
+        // Função para ordenar os comentários
+        function ordenarComentarios() {
+            console.log("Ordenando comentários...");
+
+            // Obtém o critério de ordenação selecionado
+            const criterio = document.getElementById('ordenarPor').value;
+            console.log("Critério de ordenação:", criterio);
+
+            // Obtém a lista de comentários
+            const listaComentarios = document.getElementById('listaComentarios');
+
+            // Obtém todos os comentários
+            const comentarios = listaComentarios.querySelectorAll('.comentario');
+
+            // Converte a NodeList em um array para facilitar a ordenação
+            const arrayComentarios = Array.from(comentarios);
+
+            // Verifica se o critério selecionado é "todos"
+            if (criterio === 'tudo') {
+                // Remove qualquer ordenação existente
+                listaComentarios.innerHTML = ''; // Limpa a lista
+
+                // Adiciona novamente os comentários na ordem original
+                arrayComentarios.forEach(comentario => {
+                    listaComentarios.appendChild(comentario);
+                });
+            } else {
+                // Ordena os comentários com base no critério selecionado
+                switch (criterio) {
+                    case 'recentes':
+                        arrayComentarios.sort(compararPorDataRecente);
+                        break;
+                    case 'maiorAvaliacao':
+                        arrayComentarios.sort(compararPorMaiorAvaliacao);
+                        break;
+                    case 'menorAvaliacao':
+                        arrayComentarios.sort(compararPorMenorAvaliacao);
+                        break;
+                    default:
+                        console.log("Critério de ordenação não reconhecido:", criterio);
+                }
+
+                // Limpa a lista antes de reordenar os comentários
+                listaComentarios.innerHTML = '';
+
+                // Adiciona os comentários reordenados à lista
+                arrayComentarios.forEach(comentario => {
+                    listaComentarios.appendChild(comentario);
+                });
+            }
+        }
+
+
+
+        function formatarData(dataString) {
+            const data = new Date(dataString);
             const options = {
                 day: 'numeric',
                 month: 'numeric',
                 year: 'numeric'
             };
-            return new Date(data).toLocaleDateString('pt-BR', options);
+            return data.toLocaleDateString('pt-BR', options);
         }
     </script>
     <!-- Scripts do Bootstrap (coloque no final do body para carregamento mais rápido) -->

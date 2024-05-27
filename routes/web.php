@@ -38,9 +38,10 @@ Route::get('/obter-estabelecimentos-por-categoria', [EstabelecimentoAuthControll
 Route::get('/obter-dados-estabelecimento', [EstabelecimentoAuthController::class, 'obterDadosEstabelecimento']);
 Route::get('/detalhes-estabelecimento/{id}', [EstabelecimentoAuthController::class, 'detalhes'])->name('detalhes');
 Route::get('/contato', [EstabelecimentoAuthController::class, 'contato']);
-Route::post('/avaliar-estabelecimento', [AvaliacaoController::class, 'criarAvaliacao'])->name('criarAvaliacao.estabelecimento');
+Route::post('/avaliar-estabelecimento', [AvaliacaoController::class, 'criarAvaliacao'])->name('criarAvaliacao');
 Route::get('/comentarios/{idDoEstabelecimento}', [AvaliacaoController::class, 'buscarComentarios']);
 Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'horarioEstabelecimento'])->name('estabelecimento.horarioEstabelecimento');
+Route::get('/obter-todos-estabelecimentos-ativos-sem-caracteristicas', [EstabelecimentoAuthController::class, 'obterTodosEstabelecimentosAtivosSemCaracteristicas']);
 
 Route::get('auth/estabelecimento/passwords/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('estabelecimento.password.request');
 Route::post('auth/estabelecimento/passwords/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('estabelecimento.password.email');
