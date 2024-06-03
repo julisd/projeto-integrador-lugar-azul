@@ -7,6 +7,23 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
+Auth::routes();
+
+Route::prefix('pessoa_usuaria')->group(function () {
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('pessoa_usuaria.password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('pessoa_usuaria.password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('pessoa_usuaria.password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('pessoa_usuaria.password.update');
+});
+
+Route::prefix('estabelecimento')->group(function () {
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('estabelecimento.password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('estabelecimento.password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('estabelecimento.password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('estabelecimento.password.update');
+});
+
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -61,7 +78,7 @@ Route::prefix('pessoa')->group(function () {
     Route::post('logout', [PessoaAuthController::class, 'logout'])->name('logout');
     Route::get('/pessoa/home', [PessoaAuthController::class, 'home'])->name('pessoa.home')->middleware('auth:pessoa_usuaria');
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('pessoa.password.request');
-    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('pessoa.password.email');
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetPasswordForm'])->name('pessoa.password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'resetPassword'])->name('pessoa.password.update');
     Route::get('home', [PessoaAuthController::class, 'home'])->name('pessoa.home')->middleware('auth:pessoa_usuaria');
