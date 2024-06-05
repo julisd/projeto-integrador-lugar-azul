@@ -1,0 +1,27 @@
+.page-home, 
+.page-login {
+    height: 100%;
+}
+
+.page-registro{
+    height: 100%;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+}
+
+
+/* Estilo para botões "Aprovar" e "Negar" */
+.btn-aprovar,
+.btn-negar {
+    min-width: 100px; /* Ajuste o valor conforme necessário */
+}
+
+/* Estilo para botão "Negar" no modal */
+.modal .btn-negar {
+    min-width: 80px; /* Ajuste o valor conforme necessário */
+}
