@@ -107,7 +107,6 @@ class AdminController extends Controller
 
     public function verificarEstabelecimentos()
     {
-        // Recupere uma lista de contas pendentes (status 'pendente') de estabelecimentos
         $estabelecimentosPendentes = Estabelecimento::where('status', 'pendente')->with('endereco')->get();
 
 
