@@ -114,7 +114,6 @@ public function criarAvaliacao(Request $request)
 
     Log::info('Dados recebidos no request: ' . json_encode($request->all()));
 
-    // Validando os dados recebidos no request
     $validatedData = $request->validate([
         'avaliacao' => 'required|integer|min:1|max:5',
         'comentario' => 'nullable|string',
