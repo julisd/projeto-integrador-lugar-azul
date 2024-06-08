@@ -96,6 +96,23 @@
             /* Sombra */
         }
 
+        .estabelecimento-card {
+            width: 100%;
+        }
+
+        .estabelecimento-name,
+        .estabelecimento-category,
+        .estabelecimento-endereco {
+            padding: 10px;
+        }
+
+        .card-body.estabelecimento-name,
+        .card-body.estabelecimento-category,
+        .card-body.estabelecimento-endereco {
+            font-size: 16px;
+        }
+
+
         @media (min-width: 768px) {
 
             .map-container,
@@ -147,11 +164,11 @@
         </div>
 
         <div class="row mt-3">
-    <div class="col-md-12">
-        <div id="map" style="margin-bottom: 20px;"></div>
-        <div id="estabelecimentos-list" style="display:none;"></div>
-    </div>
-</div>
+            <div class="col-md-12">
+                <div id="map" style="margin-bottom: 20px;"></div>
+                <div id="estabelecimentos-list" style="display:none;"></div>
+            </div>
+        </div>
 
     </div>
     <script>
@@ -238,23 +255,29 @@
             `);
                     markers.push(marker);
 
+
+
+                    // Dentro do loop de criação do card
+
                     // Cria elemento na lista
                     const listItem = document.createElement('div');
-                    listItem.classList.add('estabelecimento-card');
+                    listItem.classList.add('card', 'mb-3', 'estabelecimento-card');
                     const image = document.createElement('img');
                     const imageSrc = imageBasePath + '/' + estabelecimento.image;
                     image.src = imageSrc;
                     image.alt = estabelecimento.name;
                     image.style.width = '70px';
                     image.style.height = '70px';
+                    image.classList.add('card-img-top');
                     const name = document.createElement('div');
-                    name.classList.add('estabelecimento-name');
+                    name.classList.add('card-body', 'estabelecimento-name');
                     name.textContent = estabelecimento.name;
+
                     const category = document.createElement('div');
-                    category.classList.add('estabelecimento-category');
+                    category.classList.add('card-body', 'estabelecimento-category');
                     category.textContent = estabelecimento.category;
                     const endereco = document.createElement('div');
-                    endereco.classList.add('estabelecimento-endereco');
+                    endereco.classList.add('card-body', 'estabelecimento-endereco');
                     endereco.textContent = address;
                     const saibaMaisLink = document.createElement('a');
                     saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
@@ -267,8 +290,8 @@
                     listItem.appendChild(category);
                     listItem.appendChild(endereco);
                     listItem.appendChild(saibaMaisLink);
-                    listItem.appendChild(br); 
-                    
+                    listItem.appendChild(br);
+
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
                     });
