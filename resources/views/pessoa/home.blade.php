@@ -243,7 +243,7 @@
                     const listItem = document.createElement('div');
                     listItem.classList.add('card', 'mb-3','estabelecimento-card');
                     const image = document.createElement('img');
-                    const imageSrc = imageBasePath + '/' + estabelecimento.image . '?' . <?= rand(0, (int)date(`His`)); ?>;
+                    const imageSrc = imageBasePath + '/' + estabelecimento.image . '?' . <?= rand(0, (int)date('His')); ?>;
                     image.src = imageSrc;
                     image.alt = estabelecimento.name;
                     image.style.width = '70px';
