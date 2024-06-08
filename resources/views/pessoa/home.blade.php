@@ -160,7 +160,7 @@
         let estabelecimentosList;
         let infowindow;
         let markers = [];
-        var imageBasePath = "{{ asset('uploads/') }}";
+        var imageBasePath = "{{ asset('images/') }}";
 
         function initMap() {
             const blumenauCoords = {

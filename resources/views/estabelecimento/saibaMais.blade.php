@@ -264,7 +264,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="card-body text-center">
-                            <img src="{{ asset('uploads/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
+                            <img src="{{ asset('images/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
                             <div class="mb-4">
                                 <p class="lead">{{ $descricao }}</p>
                             </div>

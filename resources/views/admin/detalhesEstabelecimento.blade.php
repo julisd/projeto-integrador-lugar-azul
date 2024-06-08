@@ -20,7 +20,7 @@
         <p class="card-text"><strong>Telefone:</strong> {{ $estabelecimento->telephone }}</p>
         <p class="card-text"><strong>Logo da Empresa: </strong> </p>
 
-        <img src="{{ asset('uploads/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
+        <img src="{{ asset('images/' . $estabelecimento->image) }}" alt="Logo da Empresa" class="rounded-circle img-thumbnail mb-4 logo-pequena">
         <p class="card-text"><strong>Características de Autismo:</strong> {{ $estabelecimento->autism_characteristics }}</p>
 
         <p class="card-text"><strong>Endereço:</strong></p>

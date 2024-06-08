@@ -208,7 +208,7 @@ class EstabelecimentoAuthController extends Controller
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads'), $imageName); // Salva a imagem no diretório public/uploads
+            $image->move(public_path('images'), $imageName); // Salva a imagem no diretório public/uploads
 
             // Adicione o nome da imagem ao modelo Estabelecimento
             $estabelecimento->image = $imageName;
@@ -309,7 +309,7 @@ class EstabelecimentoAuthController extends Controller
     if ($request->hasFile('image') && $request->file('image')->isValid()) {
         $image = $request->file('image');
         $imageName = time() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('uploads'), $imageName); // Salva a imagem no diretório public/uploads
+        $image->move(public_path('images'), $imageName); // Salva a imagem no diretório public/uploads
 
         // Adicione o nome da nova imagem ao modelo do usuário
         $user->image = $imageName;
