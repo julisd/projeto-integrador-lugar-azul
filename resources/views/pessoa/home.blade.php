@@ -240,7 +240,7 @@
 
                     // Cria elemento na lista
                     const listItem = document.createElement('div');
-                    listItem.classList.add('estabelecimento-card');
+                    listItem.classList.add('card', 'mb-3','estabelecimento-card');
                     const image = document.createElement('img');
                     const imageSrc = imageBasePath + '/' + estabelecimento.image;
                     image.src = imageSrc;
