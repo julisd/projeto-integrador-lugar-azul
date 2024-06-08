@@ -147,11 +147,11 @@
         </div>
 
         <div class="row mt-3">
-            <div class="col-md-12">
-                <div id="map" style="margin-bottom: 20px;"></div>
-                <div id="estabelecimentos-list" style="display:none;"></div>
-            </div>
-        </div>
+    <div class="col-md-12">
+        <div id="map" style="margin-bottom: 20px;"></div>
+        <div id="estabelecimentos-list" style="display:none;"></div>
+    </div>
+</div>
 
     </div>
     <script>
@@ -238,9 +238,9 @@
             `);
                     markers.push(marker);
 
-
+                    // Cria elemento na lista
                     const listItem = document.createElement('div');
-                    listItem.classList.add('card', 'mb-3','estabelecimento-card');
+                    listItem.classList.add('estabelecimento-card');
                     const image = document.createElement('img');
                     const imageSrc = imageBasePath + '/' + estabelecimento.image;
                     image.src = imageSrc;
@@ -262,14 +262,13 @@
                     const br = document.createElement('br'); // Adicionando um elemento <br>
 
 
-
                     listItem.appendChild(image);
                     listItem.appendChild(name);
                     listItem.appendChild(category);
                     listItem.appendChild(endereco);
                     listItem.appendChild(saibaMaisLink);
-                    listItem.appendChild(br);
-
+                    listItem.appendChild(br); 
+                    
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
                     });
