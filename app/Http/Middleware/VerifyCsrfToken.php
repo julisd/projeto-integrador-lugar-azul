@@ -28,7 +28,7 @@ class VerifyCsrfToken extends Middleware
         'admin/logout',
         'admin/editar',
         '/responder-avaliacao',
-        '/avaliar-estabelecimento'
+        '/avaliar-estabelecimento',
     ];
     
 }
