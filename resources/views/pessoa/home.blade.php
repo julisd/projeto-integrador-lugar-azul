@@ -96,18 +96,6 @@
             /* Sombra */
         }
 
-        .estabelecimento-card {
-            width: 100%;
-        }
-
-
-        .card-body.estabelecimento-name,
-        .card-body.estabelecimento-category,
-        .card-body.estabelecimento-endereco {
-            font-size: 16px;
-        }
-
-
         @media (min-width: 768px) {
 
             .map-container,
@@ -256,7 +244,7 @@
 
                      // Cria elemento na lista
                      const listItem = document.createElement('div');
-                    listItem.classList.add('card', 'mb-3', 'estabelecimento-card');
+                    listItem.classList.add('estabelecimento-card');
                     const image = document.createElement('div');
                     const imageSrc = imageBasePath + '/' + estabelecimento.image;
                     image.src = imageSrc;
