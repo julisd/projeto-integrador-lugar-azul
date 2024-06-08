@@ -100,11 +100,6 @@
             width: 100%;
         }
 
-        .estabelecimento-name,
-        .estabelecimento-category,
-        .estabelecimento-endereco {
-            padding: 10px;
-        }
 
         .card-body.estabelecimento-name,
         .card-body.estabelecimento-category,
@@ -262,13 +257,13 @@
                     // Cria elemento na lista
                     const listItem = document.createElement('div');
                     listItem.classList.add('card', 'mb-3', 'estabelecimento-card');
-                    const image = document.createElement('img');
+                    const image = document.createElement('div');
                     const imageSrc = imageBasePath + '/' + estabelecimento.image;
                     image.src = imageSrc;
                     image.alt = estabelecimento.name;
                     image.style.width = '70px';
                     image.style.height = '70px';
-                    image.classList.add('card-img-top');
+
                     const name = document.createElement('div');
                     name.classList.add('card-body', 'estabelecimento-name');
                     name.textContent = estabelecimento.name;
