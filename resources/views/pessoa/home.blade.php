@@ -40,16 +40,17 @@
         /* Estilo para o card */
         .estabelecimento-card {
             width: 80%;
+            background-color: #007bff;
         }
 
-        /* Estilo para a imagem */
         .estabelecimento-image {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 10px;
-        }
+            margin-top: 20px;
+    width: 70px; 
+    height: 70px;
+    margin-bottom: 10px;
+    margin-inline: 10px;
 
-        /* Estilo para o conteúdo */
+    }
         .estabelecimento-name,
         .estabelecimento-category,
         .estabelecimento-endereco,
