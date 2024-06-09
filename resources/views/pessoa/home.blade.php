@@ -275,36 +275,45 @@
             `);
                     markers.push(marker);
 
-                    // Cria elemento na lista
-                    const listItem = document.createElement('div');
-                    listItem.classList.add('card', 'mb-3','estabelecimento-card');
+                    // Crie o elemento de card
+                    const card = document.createElement('div');
+                    card.classList.add('card', 'mb-3', 'estabelecimento-card');
+                    // Crie o elemento de imagem
                     const image = document.createElement('img');
-                    const imageSrc = imageBasePath + '/' + estabelecimento.image;
-                    image.src = imageSrc;
+                    image.src = imageBasePath + '/' + estabelecimento.image;
                     image.alt = estabelecimento.name;
                     image.style.width = '70px';
                     image.style.height = '70px';
+                    image.classList.add('estabelecimento-image');
+                    // Crie o elemento de conteúdo
+                    const content = document.createElement('div');
+                    content.classList.add('card-body');
+                    // Crie os elementos de nome, categoria e endereço
                     const name = document.createElement('div');
                     name.classList.add('estabelecimento-name');
                     name.textContent = estabelecimento.name;
+                    name.style.fontWeight = 'bold';
                     const category = document.createElement('div');
                     category.classList.add('estabelecimento-category');
                     category.textContent = estabelecimento.category;
                     const endereco = document.createElement('div');
                     endereco.classList.add('estabelecimento-endereco');
                     endereco.textContent = address;
+                    // Crie o link "Saiba mais"
                     const saibaMaisLink = document.createElement('a');
                     saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
                     saibaMaisLink.textContent = 'Saiba mais';
-                    const br = document.createElement('br'); // Adicionando um elemento <br>
-
-
-                    listItem.appendChild(image);
-                    listItem.appendChild(name);
-                    listItem.appendChild(category);
-                    listItem.appendChild(endereco);
-                    listItem.appendChild(saibaMaisLink);
-                    listItem.appendChild(br); 
+                    saibaMaisLink.classList.add('estabelecimento-saibaMais');
+                    // Adicione os elementos filhos ao card e ao conteúdo
+                    content.appendChild(name);
+                    content.appendChild(category);
+                    content.appendChild(endereco);
+                    content.appendChild(saibaMaisLink);
+                    card.appendChild(image);
+                    card.appendChild(content);
+                    // Adicione o card à sua lista de itens (suponho que você tenha uma lista)
+                    const listItem = document.createElement('div');
+                    listItem.appendChild(card);
                     
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
