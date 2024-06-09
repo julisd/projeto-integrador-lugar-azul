@@ -37,21 +37,34 @@
             width: 100%;
         }
 
+        /* Estilo para o card */
         .estabelecimento-card {
-            width: 100%;
+            width: 80%;
         }
 
+        /* Estilo para a imagem */
+        .estabelecimento-image {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 10px;
+        }
+
+        /* Estilo para o conteúdo */
         .estabelecimento-name,
         .estabelecimento-category,
-        .estabelecimento-card, 
-        .estabelecimento-saibaMais,
-        .estabelecimento-image,
-        .estabelecimento-endereco {
+        .estabelecimento-endereco,
+        .estabelecimento-saibaMais {
             font-style: oblique;
             font-size: 16px;
-            padding: inherit;
-            margin: auto;
+            margin-bottom: 10px;
         }
+
+        /* Estilo para o link "Saiba mais" */
+        .estabelecimento-saibaMais {
+            text-decoration: none;
+            color: blue;
+        }
+
 
         .btn-list,
         .btn-map {
@@ -164,11 +177,11 @@
         </div>
 
         <div class="row mt-3">
-    <div class="col-md-12">
-        <div id="map" style="margin-bottom: 20px;"></div>
-        <div id="estabelecimentos-list" style="display:none;"></div>
-    </div>
-</div>
+            <div class="col-md-12">
+                <div id="map" style="margin-bottom: 20px;"></div>
+                <div id="estabelecimentos-list" style="display:none;"></div>
+            </div>
+        </div>
 
     </div>
     <script>
@@ -255,39 +268,61 @@
             `);
                     markers.push(marker);
 
-                    const listItem = document.createElement('div');
-                    listItem.classList.add('card', 'mb-3', 'estabelecimento-card');
+                    // Crie o elemento de card
+                    const card = document.createElement('div');
+                    card.classList.add('card', 'mb-3', 'estabelecimento-card');
+
+                    // Crie o elemento de imagem
                     const image = document.createElement('img');
-                    const imageSrc = imageBasePath + '/' + estabelecimento.image;
-                    image.src = imageSrc;
+                    image.src = imageBasePath + '/' + estabelecimento.image;
                     image.alt = estabelecimento.name;
                     image.style.width = '70px';
                     image.style.height = '70px';
                     image.classList.add('estabelecimento-image');
+
+                    // Crie o elemento de conteúdo
+                    const content = document.createElement('div');
+                    content.classList.add('card-body');
+
+                    // Crie os elementos de nome, categoria e endereço
                     const name = document.createElement('div');
-                    name.classList.add('card-body', 'estabelecimento-name');
+                    name.classList.add('estabelecimento-name');
                     name.textContent = estabelecimento.name;
 
                     const category = document.createElement('div');
-                    category.classList.add('card-body', 'estabelecimento-category');
+                    category.classList.add('estabelecimento-category');
                     category.textContent = estabelecimento.category;
+
                     const endereco = document.createElement('div');
-                    endereco.classList.add('card-body', 'estabelecimento-endereco');
+                    endereco.classList.add('estabelecimento-endereco');
                     endereco.textContent = address;
+
+                    // Crie o link "Saiba mais"
                     const saibaMaisLink = document.createElement('a');
                     saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
                     saibaMaisLink.textContent = 'Saiba mais';
-                    saibaMaisLink.classList.add('card-body', 'estabelecimento-saibaMais');
-                    const br = document.createElement('br'); // Adicionando um elemento <br>
+                    saibaMaisLink.classList.add('estabelecimento-saibaMais');
 
+                    // Adicione os elementos filhos ao card e ao conteúdo
+                    content.appendChild(name);
+                    content.appendChild(category);
+                    content.appendChild(endereco);
+                    content.appendChild(saibaMaisLink);
+
+                    card.appendChild(image);
+                    card.appendChild(content);
+
+                    // Adicione o card à sua lista de itens (suponho que você tenha uma lista)
+                    const listItem = document.createElement('div');
+                    listItem.appendChild(card);
 
                     listItem.appendChild(image);
                     listItem.appendChild(name);
                     listItem.appendChild(category);
                     listItem.appendChild(endereco);
                     listItem.appendChild(saibaMaisLink);
-                    listItem.appendChild(br); 
-                    
+                    listItem.appendChild(br);
+
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
                     });
