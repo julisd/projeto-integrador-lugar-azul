@@ -40,24 +40,29 @@
         /* Estilo para o card */
         .estabelecimento-card {
             width: 80%;
-            background-color: #007bff;
+
+        }
+
+        .card {
+            background-color: #aad3ff;
         }
 
         .estabelecimento-image {
             margin-top: 20px;
-    width: 70px; 
-    height: 70px;
-    margin-bottom: 10px;
-    margin-inline: 10px;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 10px;
+            margin-inline: 10px;
 
-    }
+        }
+
         .estabelecimento-name,
         .estabelecimento-category,
         .estabelecimento-endereco,
         .estabelecimento-saibaMais {
             font-style: oblique;
             font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 2px;
         }
 
         /* Estilo para o link "Saiba mais" */
@@ -317,7 +322,7 @@
                     const listItem = document.createElement('div');
                     listItem.appendChild(card);
 
-                
+
 
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
