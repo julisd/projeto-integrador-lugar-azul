@@ -44,6 +44,10 @@
 
         }
 
+        .card {
+            background-color: #aad3ff;
+        }
+
         .estabelecimento-image {
             margin-top: 20px;
             width: 70px;
