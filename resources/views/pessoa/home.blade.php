@@ -43,15 +43,14 @@
 
         .estabelecimento-name,
         .estabelecimento-category,
+        .estabelecimento-card, 
+        .estabelecimento-saibaMais,
+        .estabelecimento-image,
         .estabelecimento-endereco {
-            padding: 10px;
-        }
-
-
-        .card-body.estabelecimento-name,
-        .card-body.estabelecimento-category,
-        .card-body.estabelecimento-endereco {
+            font-style: oblique;
             font-size: 16px;
+            padding: inherit;
+            margin: auto;
         }
 
         .btn-list,
@@ -264,7 +263,7 @@
                     image.alt = estabelecimento.name;
                     image.style.width = '70px';
                     image.style.height = '70px';
-                    image.classList.add('card-img-top');
+                    image.classList.add('estabelecimento-image');
                     const name = document.createElement('div');
                     name.classList.add('card-body', 'estabelecimento-name');
                     name.textContent = estabelecimento.name;
@@ -278,6 +277,7 @@
                     const saibaMaisLink = document.createElement('a');
                     saibaMaisLink.href = '/detalhes-estabelecimento/' + estabelecimento.endereco.id;
                     saibaMaisLink.textContent = 'Saiba mais';
+                    saibaMaisLink.classList.add('card-body', 'estabelecimento-saibaMais');
                     const br = document.createElement('br'); // Adicionando um elemento <br>
 
 
