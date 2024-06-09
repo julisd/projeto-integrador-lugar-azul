@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,10 +21,11 @@ class CreateEnderecosTable extends Migration
             
             $table->timestamps();
 
-            // Chave estrangeira
-            $table->foreign('estabelecimento_id')->references('id')->on('estabelecimentos');
+            // Chave estrangeira com ON DELETE CASCADE
+            $table->foreign('estabelecimento_id')
+                  ->references('id')->on('estabelecimentos')
+                  ->onDelete('cascade');
         });
-        
     }
 
     public function down()
