@@ -40,11 +40,8 @@
         /* Estilo para o card */
         .estabelecimento-card {
             width: 100%;
-
-        }
-
-        .card {
             background-color: #aad3ff;
+
         }
 
         .estabelecimento-image {
