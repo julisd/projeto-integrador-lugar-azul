@@ -39,7 +39,7 @@
 
         /* Estilo para o card */
         .estabelecimento-card {
-            width: 80%;
+            width: 100%;
 
         }
 
@@ -294,6 +294,7 @@
                     const name = document.createElement('div');
                     name.classList.add('estabelecimento-name');
                     name.textContent = estabelecimento.name;
+                    name.style.fontWeight = 'bold';
 
                     const category = document.createElement('div');
                     category.classList.add('estabelecimento-category');
