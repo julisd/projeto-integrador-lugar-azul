@@ -316,12 +316,7 @@
                     const listItem = document.createElement('div');
                     listItem.appendChild(card);
 
-                    listItem.appendChild(image);
-                    listItem.appendChild(name);
-                    listItem.appendChild(category);
-                    listItem.appendChild(endereco);
-                    listItem.appendChild(saibaMaisLink);
-                    listItem.appendChild(br);
+                
 
                     listItem.addEventListener('click', () => {
                         loadEstabelecimentoInfo(estabelecimento.endereco.id);
