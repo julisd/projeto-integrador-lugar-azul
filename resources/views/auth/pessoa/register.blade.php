@@ -1,5 +1,24 @@
 @extends('layout.app')
+<!DOCTYPE html>
+<html lang="pt-br">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Buscar Estabelecimentos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+    
+    .col-md-8 {
+    width: 100%;
+    margin-top: 25px;
+    }
+    </style>
+</head>
+
+<body>
 @section('content')
 <div class="container">
     <div class="bg-light d-flex align-items-center justify-content-center min-vh-100 page-home">

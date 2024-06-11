@@ -1,5 +1,11 @@
 @extends('layout.app')
-
+<style>
+    
+    .col-md-8 {
+    width: 100%;
+    margin-top: 25px;
+    }
+    </style>
 @section('content')
 <div class="container">
     <div class="bg-light d-flex align-items-center justify-content-center min-vh-100 page-home">
