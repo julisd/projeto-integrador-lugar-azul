@@ -125,6 +125,7 @@
 
 
     <div id="listaComentarios">
+        @if(count($comentarios) > 0)
         @foreach($comentarios as $comentario)
         <div class="card comentario" data-comentario-id="{{ $comentario['id'] }}">
             <div class="card-body">
@@ -151,6 +152,9 @@
                         </div>
                     </div>
                     @endforeach
+                    @endif
+                    @else
+                    <p>Nenhum comentário encontrado.</p>
                     @endif
                 </div>
 

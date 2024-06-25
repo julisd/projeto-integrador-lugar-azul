@@ -23,19 +23,20 @@ class AvaliacaoController extends Controller
     {
         // Buscando o estabelecimento e o endereço relacionados ao mesmo ID
         $estabelecimento = Estabelecimento::find($id);
-
+    
         // Buscando os comentários com o relacionamento do usuário carregado
         $comentarios = AvaliacaoComentario::with(['usuario', 'respostas'])
             ->where('estabelecimento_id', $id)
             ->get();
-
+    
         $comentariosFormatados = [];
-
+        $respostasFormatadas = []; // Inicializa a variável fora do loop
+    
         foreach ($comentarios as $comentario) {
             $usuarioNome = $comentario->usuario ? $comentario->usuario->name : 'Anônimo';
-
+    
             $respostas = $comentario->respostas()->get(); // Recuperando as respostas
-
+    
             // Formatando as respostas
             $respostasFormatadas = [];
             foreach ($respostas as $resposta) {
@@ -44,7 +45,7 @@ class AvaliacaoController extends Controller
                     'created_at' => $resposta->created_at->format('d/m/Y'),
                 ];
             }
-
+    
             $comentariosFormatados[] = [
                 'id' => $comentario->id,
                 'usuario_nome' => $usuarioNome,
@@ -54,7 +55,7 @@ class AvaliacaoController extends Controller
                 'respostas' => $respostasFormatadas, // Associando as respostas ao comentário
             ];
         }
-
+    
         return view('estabelecimento.comentarios', [
             'nomeDoEstabelecimento' => $estabelecimento->name,
             'estabelecimento' => $estabelecimento,
@@ -63,10 +64,10 @@ class AvaliacaoController extends Controller
             'telefone' => $estabelecimento->telephone,
             'email' => $estabelecimento->email,
             'comentarios' => $comentariosFormatados,
-            'respostas' => $respostasFormatadas,
+            'respostas' => $respostasFormatadas, 
         ]);
     }
-
+    
 
     public function responderComentario(Request $request)
 {
