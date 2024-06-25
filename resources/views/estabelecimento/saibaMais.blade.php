@@ -511,21 +511,26 @@
         }
 
         function exibirMediaAvaliacoes(media) {
-            const mediaElement = document.getElementById('mediaAvaliacoes');
-            if (mediaElement) {
-                // Converte a média para estrelas
-                let estrelas = '';
-                // Exibe apenas uma estrela
-                if (media >= 1) {
-                    estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
-                } else {
-                    estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
-                }
-                // Exibe o valor da média com uma casa decimal após a vírgula
-                estrelas += `<span>${media.toFixed(1)}</span>`;
-                mediaElement.innerHTML = estrelas;
+    const mediaElement = document.getElementById('mediaAvaliacoes');
+    if (mediaElement) {
+        if (media !== null && !isNaN(media) && media > 0) {
+            // Converte a média para estrelas
+            let estrelas = '';
+            // Exibe apenas uma estrela
+            if (media >= 1) {
+                estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
+            } else {
+                estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
             }
+            // Exibe o valor da média com uma casa decimal após a vírgula
+            estrelas += `<span>${media.toFixed(1)}</span>`;
+            mediaElement.innerHTML = estrelas;
+        } else {
+            mediaElement.innerHTML = '<p>Sem avaliações</p>';
         }
+    }
+}
+
 
         function compararPorMaiorAvaliacao(a, b) {
             const avaliacaoA = a.querySelectorAll('.rating .checked').length;
