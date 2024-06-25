@@ -6,43 +6,35 @@ return [
     'guard' => 'web',
     'passwords' => 'pessoa_usuarias',
 ],
+
+
 'guards' => [
-    'web' => [
+    'pessoa_usuaria' => [
         'driver' => 'session',
-        'provider' => 'users',
+        'provider' => 'pessoa_usuarias',
     ],
-
-    'admin' => [
-        'driver' => 'session',
-        'provider' => 'admins',
-    ],
-
     'estabelecimento' => [
         'driver' => 'session',
         'provider' => 'estabelecimentos',
     ],
-
-    'pessoa_usuaria' => [
+    'admin' => [
         'driver' => 'session',
-        'provider' => 'pessoas',
+        'provider' => 'admins',
     ],
 ],
 
 'providers' => [
-
-    'admins' => [
+    'pessoa_usuarias' => [
         'driver' => 'eloquent',
-        'model' => App\Models\Admin::class,
+        'model' => App\Models\PessoaUsuaria::class,
     ],
-
     'estabelecimentos' => [
         'driver' => 'eloquent',
         'model' => App\Models\Estabelecimento::class,
     ],
-
-    'pessoas' => [
+    'admins' => [
         'driver' => 'eloquent',
-        'model' => App\Models\PessoaUsuaria::class,
+        'model' => App\Models\Admin::class,
     ],
 ],
 

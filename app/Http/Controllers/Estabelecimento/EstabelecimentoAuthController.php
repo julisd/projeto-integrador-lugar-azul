@@ -266,7 +266,8 @@ class EstabelecimentoAuthController extends Controller
             return view('estabelecimento.home');
         }
 
-        return redirect()->route('estabelecimento.login');
+        return redirect('/estabelecimento/login');
+
     }
 
     public function editar()
