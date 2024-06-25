@@ -123,7 +123,6 @@
         <option value="nao-respondidos">Não Respondidos</option>
     </select>
 
-
     <div id="listaComentarios">
         @if(count($comentarios) > 0)
         @foreach($comentarios as $comentario)
@@ -139,22 +138,16 @@
 
                 <!-- Card de resposta -->
                 <div class="respostas-section">
-                    @if(isset($comentario['respostas']))
+                    @if(isset($comentario['respostas']) && count($comentario['respostas']) > 0)
                     @foreach($comentario['respostas'] as $resposta)
                     <div class="card resposta-card mt-3">
                         <div class="card-body">
-                            <p class="card-date"><b>Resposta do proprietário
-                                </b></p>
-                            <p class="card-date"><b>
-                                    Data: {{ $resposta['created_at'] }}</b></p>
+                            <p class="card-date"><b>Resposta do proprietário</b></p>
+                            <p class="card-date"><b>Data: {{ $resposta['created_at'] }}</b></p>
                             <p class="card-text" style="margin-left: 20px;">{{ $resposta['texto'] }}</p>
-
                         </div>
                     </div>
                     @endforeach
-                    @endif
-                    @else
-                    <p>Nenhum comentário encontrado.</p>
                     @endif
                 </div>
 
@@ -168,12 +161,12 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Responder</button>
                 </form>
-
             </div>
         </div>
         @endforeach
-    </div>
-
+        @else
+        <p>Nenhum comentário encontrado.</p>
+        @endif
     </div>
 
 
