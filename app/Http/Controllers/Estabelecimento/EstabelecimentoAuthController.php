@@ -266,7 +266,7 @@ class EstabelecimentoAuthController extends Controller
             return view('estabelecimento.home');
         }
 
-        return redirect('/estabelecimento/login');
+        return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
 
     }
 
