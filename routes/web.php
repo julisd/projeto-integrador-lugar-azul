@@ -7,8 +7,6 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
-Auth::routes();
-
 Route::prefix('pessoa_usuaria')->group(function () {
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('pessoa_usuaria.password.request');
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('pessoa_usuaria.password.email');
@@ -32,18 +30,23 @@ Route::get('/estabelecimento/{id}/comentarios', [AvaliacaoController::class, 'mo
 Route::post('/responder-avaliacao', [AvaliacaoController::class, 'responderComentario'])->name('responderComentario');
 
 Route::prefix('estabelecimento')->group(function () {
-    Route::get('home', [EstabelecimentoAuthController::class, 'home'])->name('estabelecimento.home');
-    Route::get('login', [EstabelecimentoAuthController::class, 'showLoginForm'])->name('estabelecimento.login');
-    Route::post('login', [EstabelecimentoAuthController::class, 'login'])->middleware('guest:estabelecimento');
-    Route::get('register', [EstabelecimentoAuthController::class, 'showRegistrationForm'])->name('estabelecimento.register');
-    Route::post('register', [EstabelecimentoAuthController::class, 'register']);
-    Route::get('verify', [EstabelecimentoAuthController::class, 'showVerificationForm'])->name('estabelecimento.verify')->middleware('auth:estabelecimento'); 
-    Route::get('editar', [EstabelecimentoAuthController::class, 'editar'])->name('editarContaEstabelecimento')->middleware('auth:estabelecimento');
-    Route::put('editar', [EstabelecimentoAuthController::class, 'update'])->name('estabelecimento.atualizarConta')->middleware('auth:estabelecimento');
-    Route::post('/excluir', [EstabelecimentoAuthController::class, 'excluirConta'])->name('excluirContaEst');
-    Route::post('/excluirConta', [EstabelecimentoAuthController::class, 'excluirConta'])->name('excluirContaEstabelecimento');  
-    Route::post('/logout', [EstabelecimentoAuthController::class, 'logout'])->name('estabelecimento.logout');
-    Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'show'])->name('estabelecimento.show');
+    Route::middleware('auth:estabelecimento')->group(function () {
+        Route::get('home', [EstabelecimentoAuthController::class, 'home'])->name('estabelecimento.home');
+        Route::get('verify', [EstabelecimentoAuthController::class, 'showVerificationForm'])->name('estabelecimento.verify'); 
+        Route::get('editar', [EstabelecimentoAuthController::class, 'editar'])->name('editarContaEstabelecimento');
+        Route::put('editar', [EstabelecimentoAuthController::class, 'update'])->name('estabelecimento.atualizarConta');
+        Route::post('/excluir', [EstabelecimentoAuthController::class, 'excluirConta'])->name('excluirContaEst');
+        Route::post('/excluirConta', [EstabelecimentoAuthController::class, 'excluirConta'])->name('excluirContaEstabelecimento');  
+        Route::post('/logout', [EstabelecimentoAuthController::class, 'logout'])->name('estabelecimento.logout');
+        Route::get('/estabelecimento/{id}', [EstabelecimentoAuthController::class, 'show'])->name('estabelecimento.show');
+    });
+
+    Route::middleware('guest:estabelecimento')->group(function () {
+        Route::get('login', [EstabelecimentoAuthController::class, 'showLoginForm'])->name('estabelecimento.login');
+        Route::post('login', [EstabelecimentoAuthController::class, 'login']);
+        Route::get('register', [EstabelecimentoAuthController::class, 'showRegistrationForm'])->name('estabelecimento.register');
+        Route::post('register', [EstabelecimentoAuthController::class, 'register']);
+    });
 });
 
 // Rota para obter as características do usuário
