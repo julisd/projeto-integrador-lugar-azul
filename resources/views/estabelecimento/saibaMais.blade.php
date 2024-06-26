@@ -184,22 +184,11 @@
 
         /* Estilos para os carrosséis */
         .carousel-item {
-    height: 100vh; /* Altura total da tela */
-    min-height: 300px; /* Altura mínima */
-    background: no-repeat center center scroll;
-    background-size: cover;
-    display: flex;
-    align-items: center; /* Centraliza verticalmente */
-    justify-content: center; /* Centraliza horizontalmente */
-}
-
-@media (max-width: 768px) {
-    /* Para telas menores, ajuste o estilo conforme necessário */
-    .carousel-item {
-        height: auto; /* Altura automática */
-    }
-}
-
+            height: 100vh;
+            min-height: 300px;
+            background: no-repeat center center scroll;
+            background-size: cover;
+        }
 
         .carousel-caption {
             bottom: 20%;
@@ -332,9 +321,10 @@
                 </div>
             </div>
 
-            <div id="informacoes-da-empresa" class="carousel-item d-flex align-items-center justify-content-center" data-bs-interval="10000">
-    <div class="section container">
-    <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
+            <!-- Informações da Empresa -->
+            <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">
+                <div class="section">
+                    <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
                     <div class="col-md-4">
                         <div class="info-box">
                             <i class="fas fa-phone-alt mb-4"></i>
@@ -366,8 +356,10 @@
                         </div>
                     </div>
                 </div>
-                
+            </div>
 
+
+        </div>
 
         <!-- Botões de controle -->
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
