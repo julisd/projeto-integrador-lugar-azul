@@ -185,9 +185,25 @@
         /* Estilos para os carrosséis */
         .carousel-item {
             height: 100vh;
+            /* Altura total da tela */
             min-height: 300px;
+            /* Altura mínima */
             background: no-repeat center center scroll;
             background-size: cover;
+            display: flex;
+            align-items: center;
+            /* Centraliza verticalmente */
+            justify-content: center;
+            /* Centraliza horizontalmente */
+        }
+
+        @media (max-width: 768px) {
+
+            /* Para telas menores, ajuste o estilo conforme necessário */
+            .carousel-item {
+                height: auto;
+                /* Altura automática */
+            }
         }
 
         .carousel-caption {
@@ -321,38 +337,40 @@
                 </div>
             </div>
 
-            <!-- Informações da Empresa -->
-            <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">
-                <div class="section">
-                    <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
-                    <div class="col-md-4">
-                        <div class="info-box">
-                            <i class="fas fa-phone-alt mb-4"></i>
-                            <h3>Contato</h3>
-                            <p class="contato-info">Telefone: {{ $telefone }}</p>
-                            <p>Envie-nos uma mensagem: {{ $email }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="info-box">
-                            <i class="fas fa-map-marker-alt mb-4"></i>
-                            <h3>Endereço</h3>
-                            <p class="endereco-info">Localização: {{ $logradouro }}, {{ $numero }}, {{ $complemento }}
-                            </p>
-                            <p>{{ $bairro }}, {{ $cidade }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="info-box">
-                            <i class="fas fa-clock mb-4"></i>
-                            <h3>Horário de Funcionamento</h3>
-                            <ul>
-                                @foreach($horariosEstabelecimento as $horario)
-                                <li>{{ $horario->dia_semana }}: Das {{ date('H:i', strtotime($horario->abertura)) }} às
-                                    {{ date('H:i', strtotime($horario->fechamento)) }}
-                                </li>
-                                @endforeach
-                            </ul>
+            <div id="informacoes-da-empresa" class="carousel-item d-flex align-items-center" data-bs-interval="10000">
+                <div class="container">
+                    <div class="section">
+                        <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="info-box">
+                                    <i class="fas fa-phone-alt mb-4"></i>
+                                    <h3>Contato</h3>
+                                    <p class="contato-info">Telefone: {{ $telefone }}</p>
+                                    <p>Envie-nos uma mensagem: {{ $email }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="info-box">
+                                    <i class="fas fa-map-marker-alt mb-4"></i>
+                                    <h3>Endereço</h3>
+                                    <p class="endereco-info">Localização: {{ $logradouro }}, {{ $numero }}, {{ $complemento }}</p>
+                                    <p>{{ $bairro }}, {{ $cidade }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="info-box">
+                                    <i class="fas fa-clock mb-4"></i>
+                                    <h3>Horário de Funcionamento</h3>
+                                    <ul>
+                                        @foreach($horariosEstabelecimento as $horario)
+                                        <li>{{ $horario->dia_semana }}: Das {{ date('H:i', strtotime($horario->abertura)) }} às
+                                            {{ date('H:i', strtotime($horario->fechamento)) }}
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
