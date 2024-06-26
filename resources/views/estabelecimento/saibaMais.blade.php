@@ -65,10 +65,11 @@
 
 
         .info-box {
-            min-height: 400px;
+            min-height: 300px;
             background-color: #fff;
             padding: 30px;
             border-radius: 15px;
+            margin-top: 20px;
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
