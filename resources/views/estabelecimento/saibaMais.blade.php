@@ -337,8 +337,7 @@
                 </div>
             </div>
 
-            <div id="informacoes-da-empresa" class="carousel-item d-flex align-items-center" data-bs-interval="10000">
-                <div class="container">
+            <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">
                     <div class="section">
                         <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
                         <div class="row">
@@ -373,7 +372,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                
             </div>
 
 
