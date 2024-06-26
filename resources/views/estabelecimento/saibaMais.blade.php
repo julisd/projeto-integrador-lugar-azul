@@ -304,55 +304,57 @@
             </div>
 
             <div id="verComentarios" class="carousel-item" data-bs-interval="10000">
-    <div class="section">
-        <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
+                <div class="section">
+                    <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
 
-        <div id="mediaAvaliacoes"></div>
+                    <div id="mediaAvaliacoes"></div>
 
-        <select id="ordenarPor" onchange="ordenarComentarios()" style="margin-bottom: 20px;">
-            <option value="tudo">Todos</option>
-            <option value="recentes">Mais recentes</option>
-            <option value="maiorAvaliacao">Maior avaliação</option>
-            <option value="menorAvaliacao">Menor avaliação</option>
-        </select>
+                    <select id="ordenarPor" onchange="ordenarComentarios()" style="margin-bottom: 20px;">
+                        <option value="tudo">Todos</option>
+                        <option value="recentes">Mais recentes</option>
+                        <option value="maiorAvaliacao">Maior avaliação</option>
+                        <option value="menorAvaliacao">Menor avaliação</option>
+                    </select>
 
-        <!-- Lista para exibir os comentários -->
-        <div id="listaComentarios"></div>
-    </div>
-</div>
+                    <!-- Lista para exibir os comentários -->
+                    <div id="listaComentarios"></div>
+                </div>
+            </div>
 
             <!-- Informações da Empresa -->
             <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">
                 <div class="section">
                     <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
-                    <div class="col-md-4">
-                        <div class="info-box">
-                            <i class="fas fa-phone-alt mb-4"></i>
-                            <h3>Contato</h3>
-                            <p class="contato-info">Telefone: {{ $telefone }}</p>
-                            <p>Envie-nos uma mensagem: {{ $email }}</p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <i class="fas fa-phone-alt mb-4"></i>
+                                <h3>Contato</h3>
+                                <p class="contato-info">Telefone: {{ $telefone }}</p>
+                                <p>Envie-nos uma mensagem: {{ $email }}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="info-box">
-                            <i class="fas fa-map-marker-alt mb-4"></i>
-                            <h3>Endereço</h3>
-                            <p class="endereco-info">Localização: {{ $logradouro }}, {{ $numero }}, {{ $complemento }}
-                            </p>
-                            <p>{{ $bairro }}, {{ $cidade }}</p>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <i class="fas fa-map-marker-alt mb-4"></i>
+                                <h3>Endereço</h3>
+                                <p class="endereco-info">Localização: {{ $logradouro }}, {{ $numero }}, {{ $complemento }}
+                                </p>
+                                <p>{{ $bairro }}, {{ $cidade }}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="info-box">
-                            <i class="fas fa-clock mb-4"></i>
-                            <h3>Horário de Funcionamento</h3>
-                            <ul>
-                                @foreach($horariosEstabelecimento as $horario)
-                                <li>{{ $horario->dia_semana }}: Das {{ date('H:i', strtotime($horario->abertura)) }} às
-                                    {{ date('H:i', strtotime($horario->fechamento)) }}
-                                </li>
-                                @endforeach
-                            </ul>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <i class="fas fa-clock mb-4"></i>
+                                <h3>Horário de Funcionamento</h3>
+                                <ul>
+                                    @foreach($horariosEstabelecimento as $horario)
+                                    <li>{{ $horario->dia_semana }}: Das {{ date('H:i', strtotime($horario->abertura)) }} às
+                                        {{ date('H:i', strtotime($horario->fechamento)) }}
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -511,25 +513,25 @@
         }
 
         function exibirMediaAvaliacoes(media) {
-    const mediaElement = document.getElementById('mediaAvaliacoes');
-    if (mediaElement) {
-        if (media !== null && !isNaN(media) && media > 0) {
-            // Converte a média para estrelas
-            let estrelas = '';
-            // Exibe apenas uma estrela
-            if (media >= 1) {
-                estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
-            } else {
-                estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
+            const mediaElement = document.getElementById('mediaAvaliacoes');
+            if (mediaElement) {
+                if (media !== null && !isNaN(media) && media > 0) {
+                    // Converte a média para estrelas
+                    let estrelas = '';
+                    // Exibe apenas uma estrela
+                    if (media >= 1) {
+                        estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
+                    } else {
+                        estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
+                    }
+                    // Exibe o valor da média com uma casa decimal após a vírgula
+                    estrelas += `<span>${media.toFixed(1)}</span>`;
+                    mediaElement.innerHTML = estrelas;
+                } else {
+                    mediaElement.innerHTML = '<p>Sem avaliações</p>';
+                }
             }
-            // Exibe o valor da média com uma casa decimal após a vírgula
-            estrelas += `<span>${media.toFixed(1)}</span>`;
-            mediaElement.innerHTML = estrelas;
-        } else {
-            mediaElement.innerHTML = '<p>Sem avaliações</p>';
         }
-    }
-}
 
 
         function compararPorMaiorAvaliacao(a, b) {
