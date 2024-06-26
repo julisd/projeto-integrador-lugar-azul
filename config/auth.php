@@ -1,12 +1,9 @@
 <?php
-
 return [
-
 'defaults' => [
     'guard' => 'web',
     'passwords' => 'pessoa_usuarias',
 ],
-
 
 'guards' => [
     'pessoa_usuaria' => [
@@ -37,7 +34,6 @@ return [
         'model' => App\Models\Admin::class,
     ],
 ],
-
 
 'passwords' => [
     'pessoa_usuarias' => [

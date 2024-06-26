@@ -261,13 +261,7 @@ class EstabelecimentoAuthController extends Controller
 
     public function home()
     {
-        if (auth()->guard('estabelecimento')->check()) {
-            // O usuário está autenticado como estabelecimento
-            return view('estabelecimento.home');
-        }
-
-        return redirect('/estabelecimento/login')->with('success', 'Conta criada com sucesso! Faça o login.');
-
+        return view('estabelecimento.home');
     }
 
     public function editar()
