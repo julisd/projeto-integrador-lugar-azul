@@ -65,6 +65,7 @@
 
 
         .info-box {
+            min-height: 400px;
             background-color: #fff;
             padding: 30px;
             border-radius: 15px;
@@ -189,6 +190,10 @@
             background: no-repeat center center scroll;
             background-size: cover;
         }
+
+        element.style {
+    min-height: 400px;
+}
 
         .carousel-caption {
             bottom: 20%;
