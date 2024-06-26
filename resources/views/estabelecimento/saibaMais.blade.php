@@ -184,11 +184,22 @@
 
         /* Estilos para os carrosséis */
         .carousel-item {
-            height: 100vh;
-            min-height: 300px;
-            background: no-repeat center center scroll;
-            background-size: cover;
-        }
+    height: 100vh; /* Altura total da tela */
+    min-height: 300px; /* Altura mínima */
+    background: no-repeat center center scroll;
+    background-size: cover;
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+}
+
+@media (max-width: 768px) {
+    /* Para telas menores, ajuste o estilo conforme necessário */
+    .carousel-item {
+        height: auto; /* Altura automática */
+    }
+}
+
 
         .carousel-caption {
             bottom: 20%;
@@ -304,27 +315,26 @@
             </div>
 
             <div id="verComentarios" class="carousel-item" data-bs-interval="10000">
-    <div class="section">
-        <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
-
-        <div id="mediaAvaliacoes"></div>
-
-        <select id="ordenarPor" onchange="ordenarComentarios()" style="margin-bottom: 20px;">
-            <option value="tudo">Todos</option>
-            <option value="recentes">Mais recentes</option>
-            <option value="maiorAvaliacao">Maior avaliação</option>
-            <option value="menorAvaliacao">Menor avaliação</option>
-        </select>
-
-        <!-- Lista para exibir os comentários -->
-        <div id="listaComentarios"></div>
-    </div>
-</div>
-
-            <!-- Informações da Empresa -->
-            <div id="informacoes-da-empresa" class="carousel-item" data-bs-interval="10000">
                 <div class="section">
-                    <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
+                    <h1>Comentários sobre {{ $nomeDoEstabelecimento }} </h1>
+
+                    <div id="mediaAvaliacoes"></div>
+
+                    <select id="ordenarPor" onchange="ordenarComentarios()" style="margin-bottom: 20px;">
+                        <option value="tudo">Todos</option>
+                        <option value="recentes">Mais recentes</option>
+                        <option value="maiorAvaliacao">Maior avaliação</option>
+                        <option value="menorAvaliacao">Menor avaliação</option>
+                    </select>
+
+                    <!-- Lista para exibir os comentários -->
+                    <div id="listaComentarios"></div>
+                </div>
+            </div>
+
+            <div id="informacoes-da-empresa" class="carousel-item d-flex align-items-center justify-content-center" data-bs-interval="10000">
+    <div class="section container">
+    <h1>Informações da Empresa {{ $nomeDoEstabelecimento }}</h1>
                     <div class="col-md-4">
                         <div class="info-box">
                             <i class="fas fa-phone-alt mb-4"></i>
@@ -356,10 +366,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                
 
-
-        </div>
 
         <!-- Botões de controle -->
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
@@ -511,25 +519,25 @@
         }
 
         function exibirMediaAvaliacoes(media) {
-    const mediaElement = document.getElementById('mediaAvaliacoes');
-    if (mediaElement) {
-        if (media !== null && !isNaN(media) && media > 0) {
-            // Converte a média para estrelas
-            let estrelas = '';
-            // Exibe apenas uma estrela
-            if (media >= 1) {
-                estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
-            } else {
-                estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
+            const mediaElement = document.getElementById('mediaAvaliacoes');
+            if (mediaElement) {
+                if (media !== null && !isNaN(media) && media > 0) {
+                    // Converte a média para estrelas
+                    let estrelas = '';
+                    // Exibe apenas uma estrela
+                    if (media >= 1) {
+                        estrelas += '<i class="fas fa-star checked"></i>'; // Estrela preenchida
+                    } else {
+                        estrelas += '<i class="fas fa-star"></i>'; // Estrela vazia
+                    }
+                    // Exibe o valor da média com uma casa decimal após a vírgula
+                    estrelas += `<span>${media.toFixed(1)}</span>`;
+                    mediaElement.innerHTML = estrelas;
+                } else {
+                    mediaElement.innerHTML = '<p>Sem avaliações</p>';
+                }
             }
-            // Exibe o valor da média com uma casa decimal após a vírgula
-            estrelas += `<span>${media.toFixed(1)}</span>`;
-            mediaElement.innerHTML = estrelas;
-        } else {
-            mediaElement.innerHTML = '<p>Sem avaliações</p>';
         }
-    }
-}
 
 
         function compararPorMaiorAvaliacao(a, b) {
